@@ -4,10 +4,9 @@
 <div class="card shadow-sm border-0">
     <div class="card-body p-4">
         <!-- Brand -->
-        <div class="text-center mb-4">
-            <i class="bi bi-box-seam-fill text-warning" style="font-size:3rem;"></i>
-            <h4 class="fw-bold mt-2 mb-0">SiAset</h4>
-            <p class="text-muted small">Sistem Manajemen Aset</p>
+        <div class="text-center mb-4 d-flex flex-column align-items-center">
+            <img src="<?= base_url('uploads/assets/logo.jpg') ?>" alt="Logo RS Taman Harapan Baru" class="img-fluid mb-2" style="max-height: 110px;">
+            <p class="text-muted small mb-0">Sistem Manajemen Aset</p>
         </div>
 
         <!-- Flash error -->

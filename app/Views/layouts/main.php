@@ -17,9 +17,12 @@
 <div class="d-flex" id="wrapper">
     <nav id="sidebar" class="bg-dark text-white d-flex flex-column p-0" style="min-width:240px;min-height:100vh;">
         <!-- Brand -->
-        <div class="sidebar-brand d-flex align-items-center px-3 py-3 border-bottom border-secondary">
-            <i class="bi bi-box-seam-fill fs-4 me-2 text-warning"></i>
-            <span class="fw-bold fs-5">SiAset</span>
+        <div class="sidebar-brand d-flex align-items-center gap-2 px-3 py-2 border-bottom border-secondary bg-white text-dark">
+            <img src="<?= base_url('uploads/assets/logo.jpg') ?>" alt="Logo RS" class="rounded object-contain" style="width: 32px; height: 32px;">
+            <div class="lh-sm">
+                <div class="fw-bold" style="font-size: 11px;">RS. Taman Harapan Baru</div>
+                <div class="text-muted" style="font-size: 9px;">Asset Management</div>
+            </div>
         </div>
 
         <!-- Nav -->

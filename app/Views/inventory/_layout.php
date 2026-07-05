@@ -48,11 +48,11 @@
                   transition-transform duration-200 lg:relative lg:translate-x-0">
 
         <!-- Brand -->
-        <div class="flex items-center gap-3 px-4 py-4 border-b border-gray-700">
-            <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-xs shrink-0">RS</div>
+        <div class="flex items-center gap-3 px-4 py-3 border-b border-gray-700 bg-white">
+            <img src="<?= base_url('uploads/assets/logo.jpg') ?>" alt="Logo RS" class="w-10 h-10 rounded object-contain shrink-0">
             <div class="min-w-0">
-                <div class="font-bold text-sm leading-tight truncate">RS.Taman Harapan</div>
-                <div class="text-gray-400 text-xs">Asset Management</div>
+                <div class="font-bold text-xs leading-tight text-gray-800">RS. Taman Harapan Baru</div>
+                <div class="text-gray-500 text-[10px]">Asset Management</div>
             </div>
         </div>
 
