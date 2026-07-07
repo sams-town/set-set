@@ -435,6 +435,9 @@ class PreventiveMaintenanceModel
                 ->orLike('a.asset_code', $s)
                 ->groupEnd();
         }
+        if (!empty($filters['schedule_type'])) {
+            $builder->where('ps.schedule_type', $filters['schedule_type']);
+        }
         if (!empty($filters['recurring'])) {
             $builder->where('ps.recurring', $filters['recurring']);
         }

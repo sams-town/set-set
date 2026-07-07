@@ -27,6 +27,9 @@ $priorityColor  = \App\Models\PreventiveMaintenanceModel::PRIORITY_COLORS;
             <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
                 🔄 <?= $recurringLabel[$schedule['recurring']] ?? $schedule['recurring'] ?>
             </span>
+            <span class="px-2.5 py-1 rounded-full text-xs font-semibold <?= ($schedule['schedule_type'] ?? 'pm') === 'calibration' ? 'bg-teal-100 text-teal-700' : 'bg-blue-100 text-blue-700' ?>">
+                <?= ($schedule['schedule_type'] ?? 'pm') === 'calibration' ? '🔬 Kalibrasi Alat' : '🛡️ PM' ?>
+            </span>
         </div>
     </div>
     <div class="flex gap-2 flex-wrap">
@@ -89,6 +92,12 @@ $priorityColor  = \App\Models\PreventiveMaintenanceModel::PRIORITY_COLORS;
                         <p class="font-semibold text-gray-800">
                             <?= $recurringLabel[$schedule['recurring']] ?? '-' ?>
                             <span class="text-gray-400 font-normal text-xs">(<?= $schedule['interval_days'] ?> hari)</span>
+                        </p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-400 mb-0.5">Tipe Jadwal</p>
+                        <p class="font-semibold text-gray-800">
+                            <?= ($schedule['schedule_type'] ?? 'pm') === 'calibration' ? '🔬 Kalibrasi Alat' : '🛠️ Preventive Maintenance (PM)' ?>
                         </p>
                     </div>
                     <div>

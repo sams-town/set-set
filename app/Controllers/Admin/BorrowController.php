@@ -56,7 +56,7 @@ class BorrowController extends BaseController
         $deptScope = $this->getDeptScope();
 
         // Aset tersedia — scope ke dept jika bukan admin
-        $assetFilters = ['status' => 'tersedia'];
+        $assetFilters = ['status' => ['Standby', 'Siap Operasi']];
         if ($deptScope !== null) {
             $assetFilters['department_id'] = $deptScope;
         }
@@ -83,7 +83,7 @@ class BorrowController extends BaseController
         $assetId = (int) $this->request->getPost('asset_id');
         $asset   = $this->assetModel->getById($assetId);
 
-        if (! $asset || $asset['status'] !== 'tersedia') {
+        if (! $asset || ! in_array($asset['status'], ['Standby', 'Siap Operasi'])) {
             return redirect()->back()->withInput()->with('error', 'Aset tidak tersedia untuk dipinjam.');
         }
 
@@ -100,8 +100,8 @@ class BorrowController extends BaseController
             'approved_by'      => session()->get('user_id'),
         ]);
 
-        // Update status aset ke dipinjam
-        $this->assetModel->update($assetId, ['status' => 'dipinjam']);
+        // Update status aset ke Aktif
+        $this->assetModel->update($assetId, ['status' => 'Aktif']);
         $this->logModel->record($assetId, 'dipinjam', 'Dipinjam dengan kode: ' . $borrowCode);
 
         return redirect()->to('/admin/borrows')->with('success', 'Peminjaman berhasil dicatat.');
@@ -148,8 +148,8 @@ class BorrowController extends BaseController
             'notes'              => $this->request->getPost('notes'),
         ]);
 
-        // Update status aset kembali ke tersedia
-        $this->assetModel->update((int) $borrow['asset_id'], ['status' => 'tersedia']);
+        // Update status aset kembali ke Standby
+        $this->assetModel->update((int) $borrow['asset_id'], ['status' => 'Standby']);
         $this->logModel->record((int) $borrow['asset_id'], 'dikembalikan', 'Dikembalikan pada ' . $returnDate);
 
         return redirect()->to('/admin/borrows/' . $id)->with('success', 'Aset berhasil dikembalikan.');

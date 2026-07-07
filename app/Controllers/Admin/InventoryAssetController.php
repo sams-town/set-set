@@ -14,15 +14,8 @@ class InventoryAssetController extends BaseController
     private const PER_PAGE = 15;
 
     private const CATEGORIES = [
-        'Komputer & Laptop',
-        'Printer & Scanner',
-        'Jaringan & Telekomunikasi',
-        'Perabot Kantor',
-        'Proyektor & AV',
-        'Kendaraan Dinas',
-        'Elektronik & Listrik',
-        'Alat Ukur & Laboratorium',
-        'Lainnya',
+        'Alat Medis',
+        'Alat Non Medis',
     ];
 
     // Satuan umum
@@ -121,10 +114,12 @@ class InventoryAssetController extends BaseController
             'categories'               => self::CATEGORIES,
             'departments'              => $this->model->getDepartmentsDropdown(),
             'locations'                => $this->model->getLocationsDropdown(),
+            'locations_with_dept'      => $this->model->getLocationsWithDept(),
             'vendors'                  => $this->model->getVendorsDropdown(),
             'units'                    => self::UNITS,
             'depreciation_years_opts'  => self::DEPRECIATION_YEARS_OPTIONS,
             'pm_intervals'             => self::PM_INTERVALS,
+            'templates'                => (new \App\Models\AssetTemplateModel())->findAll(),
         ]);
     }
 
@@ -177,7 +172,12 @@ class InventoryAssetController extends BaseController
             'depreciation_years'  => $this->request->getPost('depreciation_years') ?: null,
             'pm_interval_days'    => $this->request->getPost('pm_interval_days')   ?: null,
             'condition'           => $this->request->getPost('condition'),
-            'status'              => 'tersedia',
+            'status'              => 'Standby',
+            'requires_calibration' => (int) $this->request->getPost('requires_calibration'),
+            'last_calibration_date' => $this->request->getPost('last_calibration_date') ?: null,
+            'next_calibration_date' => $this->request->getPost('next_calibration_date') ?: null,
+            'calibration_certificate' => $this->request->getPost('calibration_certificate') ?: null,
+            'calibration_vendor'  => $this->request->getPost('calibration_vendor') ?: null,
             'description'         => $this->request->getPost('description'),
             'photo'               => $photoName,
             'created_by'          => session()->get('user_id'),
@@ -255,10 +255,12 @@ class InventoryAssetController extends BaseController
             'categories'              => self::CATEGORIES,
             'departments'             => $this->model->getDepartmentsDropdown(),
             'locations'               => $this->model->getLocationsDropdown(),
+            'locations_with_dept'     => $this->model->getLocationsWithDept(),
             'vendors'                 => $this->model->getVendorsDropdown(),
             'units'                   => self::UNITS,
             'depreciation_years_opts' => self::DEPRECIATION_YEARS_OPTIONS,
             'pm_intervals'            => self::PM_INTERVALS,
+            'templates'               => (new \App\Models\AssetTemplateModel())->findAll(),
         ]);
     }
 
@@ -276,7 +278,7 @@ class InventoryAssetController extends BaseController
             'name'      => 'required|min_length[2]|max_length[150]',
             'category'  => 'required|max_length[50]',
             'condition' => 'required|in_list[baik,rusak_ringan,rusak_berat]',
-            'status'    => 'required|in_list[tersedia,dipinjam,dalam_perbaikan,dihapus]',
+            'status'    => 'required|max_length[50]',
             'quantity'  => 'permit_empty|integer|greater_than[0]',
         ];
 
@@ -324,6 +326,11 @@ class InventoryAssetController extends BaseController
             'pm_interval_days'   => $this->request->getPost('pm_interval_days')   ?: null,
             'condition'          => $this->request->getPost('condition'),
             'status'             => $this->request->getPost('status'),
+            'requires_calibration' => (int) $this->request->getPost('requires_calibration'),
+            'last_calibration_date' => $this->request->getPost('last_calibration_date') ?: null,
+            'next_calibration_date' => $this->request->getPost('next_calibration_date') ?: null,
+            'calibration_certificate' => $this->request->getPost('calibration_certificate') ?: null,
+            'calibration_vendor' => $this->request->getPost('calibration_vendor') ?: null,
             'description'        => $this->request->getPost('description'),
             'photo'              => $photoName,
         ];

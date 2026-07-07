@@ -40,6 +40,8 @@ class InventoryAssetModel
                  a.warranty_expiry, a.condition, a.status, a.status_condition,
                  a.quantity, a.unit, a.depreciation_years, a.depreciation_value,
                  a.pm_interval_days, a.photo, a.created_at,
+                 a.requires_calibration, a.last_calibration_date, a.next_calibration_date,
+                 a.calibration_certificate, a.calibration_vendor,
                  d.name  AS department_name,
                  l.name  AS location_name, l.building, l.floor,
                  v.name  AS vendor_name,
@@ -260,13 +262,33 @@ class InventoryAssetModel
 
         $rows = $builder->groupBy('status')->get()->getResultArray();
 
-        $stats = ['total' => 0, 'tersedia' => 0, 'dipinjam' => 0, 'dalam_perbaikan' => 0, 'dihapus' => 0];
+        $stats = [
+            'total'     => 0,
+            'normal'    => 0,
+            'perhatian' => 0,
+            'warning'   => 0,
+            'critical'  => 0,
+        ];
+
+        $normalList = ['Aktif', 'Standby', 'Terpasang', 'Siap Operasi', 'tersedia'];
+        $perhatianList = ['Jadwal PM', 'Kalibrasi', 'Menunggu Instalasi', 'Menunggu Sparepart', 'Pengadaan'];
+        $warningList = ['Rusak Ringan', 'Corrective Maintenance', 'Idle', 'Mutasi', 'dalam_perbaikan', 'diperbaiki'];
+        $criticalList = ['Rusak Berat', 'Tidak Beroperasi', 'Obsolete', 'Penghapusan', 'dihapus'];
 
         foreach ($rows as $row) {
-            if (array_key_exists($row['status'], $stats)) {
-                $stats[$row['status']] = (int) $row['total'];
+            $st  = $row['status'];
+            $qty = (int) $row['total'];
+
+            if (in_array($st, $normalList)) {
+                $stats['normal'] += $qty;
+            } elseif (in_array($st, $perhatianList)) {
+                $stats['perhatian'] += $qty;
+            } elseif (in_array($st, $warningList)) {
+                $stats['warning'] += $qty;
+            } elseif (in_array($st, $criticalList)) {
+                $stats['critical'] += $qty;
             }
-            $stats['total'] += (int) $row['total'];
+            $stats['total'] += $qty;
         }
 
         $warBuilder = $this->db->table('assets')
@@ -280,7 +302,29 @@ class InventoryAssetModel
 
         $stats['warranty_soon'] = (int) $warBuilder->countAllResults();
 
+        // Kalibrasi hampir habis (~30 hari)
+        $calBuilder = $this->db->table('assets')
+            ->where('deleted_at', null)
+            ->where('requires_calibration', 1)
+            ->where('next_calibration_date >=', date('Y-m-d'))
+            ->where('next_calibration_date <=', date('Y-m-d', strtotime('+30 days')));
+
+        if ($deptId !== null) {
+            $calBuilder->where('department_id', $deptId);
+        }
+        $stats['calibration_soon'] = (int) $calBuilder->countAllResults();
+
         return $stats;
+    }
+
+    public function getLocationsWithDept(): array
+    {
+        return $this->db->table('locations l')
+            ->select('l.id, l.name, l.building, l.department_id, d.name AS dept_name')
+            ->join('departments d', 'd.id = l.department_id', 'left')
+            ->where('l.deleted_at', null)
+            ->orderBy('l.name', 'ASC')
+            ->get()->getResultArray();
     }
 
     // ---------------------------------------------------------------
@@ -357,7 +401,11 @@ class InventoryAssetModel
         }
 
         if (! empty($filters['status'])) {
-            $builder->where('a.status', $filters['status']);
+            if (is_array($filters['status'])) {
+                $builder->whereIn('a.status', $filters['status']);
+            } else {
+                $builder->where('a.status', $filters['status']);
+            }
         }
 
         if (! empty($filters['condition'])) {

@@ -4,7 +4,19 @@
 <?php
 $rp = fn($n) => 'Rp ' . number_format((float)$n, 0, ',', '.');
 
-$stMap   = ['tersedia' => 'bg-green-100 text-green-700', 'dipinjam' => 'bg-yellow-100 text-yellow-700', 'dalam_perbaikan' => 'bg-orange-100 text-orange-700', 'dihapus' => 'bg-red-100 text-red-700'];
+$getStatusBadgeClass = function($status) {
+    $normalList = ['Aktif', 'Standby', 'Terpasang', 'Siap Operasi', 'tersedia'];
+    $perhatianList = ['Jadwal PM', 'Kalibrasi', 'Menunggu Instalasi', 'Menunggu Sparepart', 'Pengadaan'];
+    $warningList = ['Rusak Ringan', 'Corrective Maintenance', 'Idle', 'Mutasi', 'dalam_perbaikan', 'diperbaiki'];
+    $criticalList = ['Rusak Berat', 'Tidak Beroperasi', 'Obsolete', 'Penghapusan', 'dihapus'];
+
+    if (in_array($status, $normalList)) return 'bg-green-100 text-green-700';
+    if (in_array($status, $perhatianList)) return 'bg-yellow-100 text-yellow-800 border border-yellow-200';
+    if (in_array($status, $warningList)) return 'bg-orange-100 text-orange-700';
+    if (in_array($status, $criticalList)) return 'bg-red-100 text-red-700';
+    return 'bg-gray-100 text-gray-700';
+};
+
 $condMap = ['baik' => 'bg-green-100 text-green-700', 'rusak_ringan' => 'bg-yellow-100 text-yellow-700', 'rusak_berat' => 'bg-red-100 text-red-700'];
 $condLabel = ['baik' => 'Baik', 'rusak_ringan' => 'Rusak Ringan', 'rusak_berat' => 'Rusak Berat'];
 $scLabel = ['baru' => '🆕 Baru', '2nd' => '🔄 2nd', 'bekas' => '📦 Bekas'];
@@ -23,8 +35,8 @@ $scLabel = ['baru' => '🆕 Baru', '2nd' => '🔄 2nd', 'bekas' => '📦 Bekas']
         <h1 class="text-xl font-bold text-gray-800"><?= esc($asset['name']) ?></h1>
         <div class="flex items-center gap-2 mt-1 flex-wrap">
             <code class="text-sm text-gray-500 font-mono"><?= esc($asset['asset_code']) ?></code>
-            <span class="px-2 py-0.5 rounded-full text-xs font-semibold <?= $stMap[$asset['status']] ?? 'bg-gray-100' ?>">
-                <?= ucwords(str_replace('_', ' ', $asset['status'])) ?>
+            <span class="px-2 py-0.5 rounded-full text-xs font-semibold <?= $getStatusBadgeClass($asset['status']) ?>">
+                <?= esc($asset['status']) ?>
             </span>
             <span class="px-2 py-0.5 rounded-full text-xs font-semibold <?= $condMap[$asset['condition']] ?? 'bg-gray-100' ?>">
                 <?= $condLabel[$asset['condition']] ?? $asset['condition'] ?>
@@ -228,6 +240,64 @@ $scLabel = ['baru' => '🆕 Baru', '2nd' => '🔄 2nd', 'bekas' => '📦 Bekas']
                     </a>
                 </div>
             </div>
+        </div>
+        <?php endif; ?>
+
+        <!-- SECTION 3.5: Detail Kalibrasi Alat Medis -->
+        <?php if (!empty($asset['requires_calibration']) && $asset['requires_calibration'] == 1): ?>
+        <div class="bg-white border rounded-xl p-5 shadow-sm">
+            <h2 class="text-sm font-bold text-gray-700 mb-4 pb-2 border-b flex items-center gap-2">
+                <span class="text-teal-600">🔬</span> Uji Kalibrasi Alat Medis
+            </h2>
+            
+            <?php
+            $calStatus = 'Terkalibrasi';
+            $calClass = 'bg-green-100 text-green-700';
+            
+            if (empty($asset['next_calibration_date'])) {
+                $calStatus = 'Belum Terjadwal';
+                $calClass = 'bg-yellow-100 text-yellow-700';
+            } else {
+                $nextCal = strtotime($asset['next_calibration_date']);
+                $days = (int) (($nextCal - time()) / 86400);
+                if ($days < 0) {
+                    $calStatus = 'Kalibrasi Kadaluwarsa';
+                    $calClass = 'bg-red-100 text-red-700';
+                } elseif ($days <= 30) {
+                    $calStatus = 'Perlu Kalibrasi Segera';
+                    $calClass = 'bg-orange-100 text-orange-700';
+                }
+            }
+            ?>
+            
+            <div class="flex items-center gap-3 mb-4">
+                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold <?= $calClass ?>">
+                    <?= $calStatus ?>
+                </span>
+                <?php if (!empty($asset['next_calibration_date'])): ?>
+                <span class="text-xs text-gray-500">
+                    Jadwal berikutnya: <?= date('d M Y', strtotime($asset['next_calibration_date'])) ?>
+                    (<?= $days < 0 ? 'Expired ' . abs($days) . ' hari lalu' : $days . ' hari lagi' ?>)
+                </span>
+                <?php endif; ?>
+            </div>
+            
+            <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
+                <div>
+                    <dt class="text-xs text-gray-400">Kalibrasi Terakhir</dt>
+                    <dd class="font-semibold text-gray-800">
+                        <?= !empty($asset['last_calibration_date']) ? date('d M Y', strtotime($asset['last_calibration_date'])) : '-' ?>
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-xs text-gray-400">Sertifikat Kalibrasi</dt>
+                    <dd class="font-semibold text-gray-800"><?= esc($asset['calibration_certificate'] ?: '-') ?></dd>
+                </div>
+                <div>
+                    <dt class="text-xs text-gray-400">Lembaga Penguji</dt>
+                    <dd class="font-semibold text-gray-800"><?= esc($asset['calibration_vendor'] ?: '-') ?></dd>
+                </div>
+            </dl>
         </div>
         <?php endif; ?>
     </div>

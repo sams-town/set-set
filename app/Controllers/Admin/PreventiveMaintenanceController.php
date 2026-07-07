@@ -43,12 +43,13 @@ class PreventiveMaintenanceController extends BaseController
     public function index()
     {
         $filters = [
-            'search'      => $this->request->getGet('search'),
-            'recurring'   => $this->request->getGet('recurring'),
-            'priority'    => $this->request->getGet('priority'),
-            'assigned_to' => $this->request->getGet('assigned_to'),
-            'status'      => $this->request->getGet('status'), // overdue/due_today/this_week
-            'is_active'   => $this->request->getGet('is_active') ?? '1',
+            'search'        => $this->request->getGet('search'),
+            'schedule_type' => $this->request->getGet('schedule_type'),
+            'recurring'     => $this->request->getGet('recurring'),
+            'priority'      => $this->request->getGet('priority'),
+            'status'        => $this->request->getGet('status'),
+            'assigned_to'   => $this->request->getGet('assigned_to'),
+            'is_active'     => $this->request->getGet('is_active'),
         ];
 
         $page       = max(1, (int) $this->request->getGet('page'));
@@ -109,11 +110,12 @@ class PreventiveMaintenanceController extends BaseController
     public function store()
     {
         $rules = [
-            'asset_id'   => 'required|integer',
-            'title'      => 'required|min_length[5]|max_length[200]',
-            'recurring'  => 'required|in_list[daily,weekly,monthly,quarterly,biannual,yearly]',
-            'priority'   => 'required|in_list[rendah,sedang,tinggi,kritis]',
-            'start_date' => 'required|valid_date',
+            'asset_id'      => 'required|integer',
+            'schedule_type' => 'required|in_list[pm,calibration]',
+            'title'         => 'required|min_length[5]|max_length[200]',
+            'recurring'     => 'required|in_list[daily,weekly,monthly,quarterly,biannual,yearly]',
+            'priority'      => 'required|in_list[rendah,sedang,tinggi,kritis]',
+            'start_date'    => 'required|valid_date',
         ];
 
         if (! $this->validate($rules)) {
@@ -123,6 +125,7 @@ class PreventiveMaintenanceController extends BaseController
 
         $scheduleId = $this->model->insert([
             'asset_id'           => $this->request->getPost('asset_id'),
+            'schedule_type'      => $this->request->getPost('schedule_type'),
             'title'              => $this->request->getPost('title'),
             'description'        => $this->request->getPost('description'),
             'recurring'          => $this->request->getPost('recurring'),
@@ -200,9 +203,10 @@ class PreventiveMaintenanceController extends BaseController
         }
 
         $rules = [
-            'title'     => 'required|min_length[5]|max_length[200]',
-            'recurring' => 'required|in_list[daily,weekly,monthly,quarterly,biannual,yearly]',
-            'priority'  => 'required|in_list[rendah,sedang,tinggi,kritis]',
+            'schedule_type' => 'required|in_list[pm,calibration]',
+            'title'         => 'required|min_length[5]|max_length[200]',
+            'recurring'     => 'required|in_list[daily,weekly,monthly,quarterly,biannual,yearly]',
+            'priority'      => 'required|in_list[rendah,sedang,tinggi,kritis]',
         ];
 
         if (! $this->validate($rules)) {
@@ -211,6 +215,7 @@ class PreventiveMaintenanceController extends BaseController
         }
 
         $this->model->update($id, [
+            'schedule_type'      => $this->request->getPost('schedule_type'),
             'title'              => $this->request->getPost('title'),
             'description'        => $this->request->getPost('description'),
             'recurring'          => $this->request->getPost('recurring'),
@@ -268,15 +273,17 @@ class PreventiveMaintenanceController extends BaseController
         // 1. Update schedule: last_done & next_due
         $this->model->markAsDone($id, $doneDate, $actionTaken);
 
-        // 2. Auto-generate Work Order preventive (status done)
+        $isCalibration = ($schedule['schedule_type'] ?? 'pm') === 'calibration';
+
+        // 2. Auto-generate Work Order (status done)
         $woCode = $this->woModel->generateCode();
         $woId   = $this->woModel->insert([
             'wo_code'       => $woCode,
             'asset_id'      => $schedule['asset_id'],
-            'type'          => 'preventive',
+            'type'          => $isCalibration ? 'kalibrasi_alat' : 'preventive',
             'priority'      => $schedule['priority'],
             'status'        => 'done',
-            'problem_desc'  => 'PM Rutin: ' . $schedule['title'],
+            'problem_desc'  => ($isCalibration ? 'Kalibrasi Berkala: ' : 'PM Rutin: ') . $schedule['title'],
             'action_taken'  => $actionTaken,
             'requested_by'  => session()->get('user_id'),
             'assigned_to'   => $schedule['assigned_to'],
@@ -285,6 +292,17 @@ class PreventiveMaintenanceController extends BaseController
             'cost'          => $cost,
             'notes'         => 'Auto-generated dari PM Schedule #' . $id,
         ]);
+
+        // Sync with asset calibration columns if type is calibration
+        if ($isCalibration) {
+            $nextDue = date('Y-m-d', strtotime($doneDate . ' + ' . $schedule['interval_days'] . ' days'));
+            $assetModel = new \App\Models\InventoryAssetModel();
+            $assetModel->update((int) $schedule['asset_id'], [
+                'requires_calibration' => 1,
+                'last_calibration_date' => $doneDate,
+                'next_calibration_date' => $nextDue,
+            ]);
+        }
 
         // 3. Log maintenance
         if ($woId) {

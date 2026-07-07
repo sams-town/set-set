@@ -30,7 +30,7 @@ $recurringDays = \App\Models\PreventiveMaintenanceModel::RECURRING_DAYS;
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
         <!-- Aset -->
-        <div class="md:col-span-2">
+        <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">
                 Aset <span class="text-red-500">*</span>
             </label>
@@ -46,6 +46,18 @@ $recurringDays = \App\Models\PreventiveMaintenanceModel::RECURRING_DAYS;
             <?php if ($isEdit): ?>
                 <input type="hidden" name="asset_id" value="<?= $schedule['asset_id'] ?>">
             <?php endif; ?>
+        </div>
+
+        <!-- Tipe Jadwal -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+                Tipe Jadwal <span class="text-red-500">*</span>
+            </label>
+            <select name="schedule_type" required
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                <option value="pm" <?= $v('schedule_type', 'pm') === 'pm' ? 'selected' : '' ?>>🛡️ Preventive Maintenance (PM)</option>
+                <option value="calibration" <?= $v('schedule_type') === 'calibration' ? 'selected' : '' ?>>🔬 Kalibrasi Alat</option>
+            </select>
         </div>
 
         <!-- Judul PM -->

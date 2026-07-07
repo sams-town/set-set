@@ -33,7 +33,7 @@ class WorkOrderController extends BaseController
 
     private const STATUS_LIST   = ['open', 'in_progress', 'waiting_part', 'done', 'cancelled'];
     private const PRIORITY_LIST = ['rendah', 'sedang', 'tinggi', 'kritis'];
-    private const TYPE_LIST     = ['corrective', 'preventive', 'inspection'];
+    private const TYPE_LIST     = ['corrective', 'preventive', 'inspection', 'kalibrasi_alat'];
 
     public function __construct()
     {
@@ -564,7 +564,7 @@ class WorkOrderController extends BaseController
     {
         return [
             'asset_id'     => 'required|integer',
-            'type'         => 'required|in_list[preventive,corrective,inspection]',
+            'type'         => 'required|in_list[preventive,corrective,inspection,kalibrasi_alat]',
             'priority'     => 'required|in_list[rendah,sedang,tinggi,kritis]',
             'problem_desc' => 'required|min_length[10]',
         ];
@@ -573,7 +573,7 @@ class WorkOrderController extends BaseController
     private function updateRules(): array
     {
         return [
-            'type'     => 'required|in_list[preventive,corrective,inspection]',
+            'type'     => 'required|in_list[preventive,corrective,inspection,kalibrasi_alat]',
             'priority' => 'required|in_list[rendah,sedang,tinggi,kritis]',
             'status'   => 'required|in_list[open,in_progress,waiting_part,done,cancelled]',
         ];

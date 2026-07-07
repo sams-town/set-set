@@ -47,6 +47,14 @@ $routes->group('admin', ['filter' => 'auth'], function ($routes) {
     $routes->post('categories/(:num)/update', 'Admin\CategoryController::update/$1');
     $routes->post('categories/(:num)/delete', 'Admin\CategoryController::delete/$1');
 
+    // ── Asset Templates ─────────────────────────────────────────
+    $routes->get('asset-templates',                 'Admin\AssetTemplateController::index');
+    $routes->get('asset-templates/new',             'Admin\AssetTemplateController::create');
+    $routes->post('asset-templates',                'Admin\AssetTemplateController::store');
+    $routes->get('asset-templates/(:num)/edit',     'Admin\AssetTemplateController::edit/$1');
+    $routes->post('asset-templates/(:num)/update',  'Admin\AssetTemplateController::update/$1');
+    $routes->post('asset-templates/(:num)/delete',  'Admin\AssetTemplateController::delete/$1');
+
     // ── Locations ───────────────────────────────────────────────
     $routes->get('locations',                 'Admin\LocationController::index');
     $routes->get('locations/new',             'Admin\LocationController::create');

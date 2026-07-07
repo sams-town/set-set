@@ -159,6 +159,12 @@ $ds = $dash_stats;
             <?php endforeach; ?>
         </select>
 
+        <select name="schedule_type" class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <option value="">Semua Tipe Jadwal</option>
+            <option value="pm" <?= ($filters['schedule_type'] ?? '') === 'pm' ? 'selected' : '' ?>>Preventive PM</option>
+            <option value="calibration" <?= ($filters['schedule_type'] ?? '') === 'calibration' ? 'selected' : '' ?>>Kalibrasi Alat</option>
+        </select>
+
         <select name="priority" class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
             <option value="">Semua Prioritas</option>
             <?php foreach (['rendah','sedang','tinggi','kritis'] as $p): ?>
@@ -196,6 +202,7 @@ $ds = $dash_stats;
             <thead>
                 <tr class="bg-gray-50 border-b text-gray-600 text-left text-xs uppercase tracking-wide">
                     <th class="px-3 py-3">Aset</th>
+                    <th class="px-3 py-3">Tipe</th>
                     <th class="px-3 py-3">Judul PM</th>
                     <th class="px-3 py-3">Recurring</th>
                     <th class="px-3 py-3">Teknisi</th>
@@ -209,7 +216,7 @@ $ds = $dash_stats;
             <tbody class="divide-y divide-gray-100">
                 <?php if (empty($schedules)): ?>
                 <tr>
-                    <td colspan="9" class="text-center text-gray-400 py-12">
+                    <td colspan="10" class="text-center text-gray-400 py-12">
                         <div class="text-3xl mb-2">📋</div>Tidak ada schedule PM.
                     </td>
                 </tr>
@@ -225,6 +232,13 @@ $ds = $dash_stats;
                         <div class="font-medium text-gray-800 truncate"><?= esc($pm['asset_name'] ?? '-') ?></div>
                         <code class="text-gray-400"><?= esc($pm['asset_code'] ?? '') ?></code>
                         <div class="text-gray-400"><?= esc($pm['department_name'] ?? '') ?></div>
+                    </td>
+                    
+                    <!-- Tipe Jadwal -->
+                    <td class="px-3 py-2.5 text-xs">
+                        <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-semibold <?= ($pm['schedule_type'] ?? 'pm') === 'calibration' ? 'bg-teal-100 text-teal-700' : 'bg-blue-100 text-blue-700' ?>">
+                            <?= ($pm['schedule_type'] ?? 'pm') === 'calibration' ? '🔬 Kalibrasi' : '🛠️ PM' ?>
+                        </span>
                     </td>
 
                     <!-- Judul PM -->

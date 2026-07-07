@@ -23,19 +23,18 @@ $curStep = match($wo['status']) {
     'open'         => empty($wo['assessment_notes']) ? 1 : 2,
     'in_progress'  => 3,
     'waiting_part' => 2,
-    'done'         => 5,
+    'done'         => 4,
     'cancelled'    => 0,
     default        => 1,
 };
-if ($wo['status'] === 'in_progress' && !empty($wo['photo_after'])) $curStep = 4;
-if ($wo['status'] === 'done') $curStep = 5;
+if ($wo['status'] === 'in_progress' && !empty($wo['photo_after'])) $curStep = 3;
+if ($wo['status'] === 'done') $curStep = 4;
 
 $steps = [
-    ['icon'=>'📝','label'=>'Keluhan Masuk',  'desc'=>date('d M Y H:i', strtotime($wo['created_at'])), 'step'=>1],
+    ['icon'=>'📝','label'=>'Penginput',      'desc'=>date('d M Y H:i', strtotime($wo['created_at'])), 'step'=>1],
     ['icon'=>'🔍','label'=>'Assessment',     'desc'=>!empty($wo['assessment_notes']) ? 'Teknisi sudah assessment' : 'Menunggu assessment', 'step'=>2],
-    ['icon'=>'🔧','label'=>'Pengerjaan',     'desc'=>$wo['start_date'] ? date('d M Y', strtotime($wo['start_date'])) : 'Belum dimulai', 'step'=>3],
-    ['icon'=>'🧪','label'=>'Testing',        'desc'=>!empty($wo['photo_after']) ? 'Foto after tersedia' : 'Belum ada foto after', 'step'=>4],
-    ['icon'=>'✅','label'=>'Close WO',       'desc'=>$wo['finish_date'] ? date('d M Y', strtotime($wo['finish_date'])) : ($wo['status']==='cancelled' ? 'Dibatalkan' : 'Belum selesai'), 'step'=>5],
+    ['icon'=>'🔧','label'=>'Status Progress','desc'=>$wo['start_date'] ? date('d M Y', strtotime($wo['start_date'])) : 'Pengerjaan dimulai', 'step'=>3],
+    ['icon'=>'✅','label'=>'Done',            'desc'=>$wo['finish_date'] ? date('d M Y', strtotime($wo['finish_date'])) : ($wo['status']==='cancelled' ? 'Dibatalkan' : 'Belum selesai'), 'step'=>4],
 ];
 ?>
 
@@ -63,7 +62,7 @@ $steps = [
                 <?= ucfirst($wo['priority']) ?> Priority
             </span>
             <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
-                <?= ucfirst($wo['type']) ?>
+                <?= $wo['type'] === 'kalibrasi_alat' ? 'Kalibrasi Alat' : ucfirst($wo['type']) ?>
             </span>
             <?php if (!empty($wo['category_wo'])): ?>
             <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">
@@ -126,7 +125,7 @@ $steps = [
         <div class="bg-white border rounded-xl shadow-sm overflow-hidden">
             <div class="px-4 py-3 bg-gray-50 border-b flex items-center gap-2">
                 <span>📝</span>
-                <h2 class="text-sm font-bold text-gray-700">Detail Keluhan</h2>
+                <h2 class="text-sm font-bold text-gray-700">1. Penginput (Keluhan & Pelapor)</h2>
             </div>
             <div class="p-4">
                 <div class="grid grid-cols-2 gap-4 text-sm mb-4">
@@ -184,7 +183,7 @@ $steps = [
         <div class="bg-white border rounded-xl shadow-sm overflow-hidden">
             <div class="px-4 py-3 bg-gray-50 border-b flex items-center gap-2">
                 <span>🔍</span>
-                <h2 class="text-sm font-bold text-gray-700">Assessment Teknisi</h2>
+                <h2 class="text-sm font-bold text-gray-700">2. Assessment (Diagnosis & Penugasan)</h2>
             </div>
             <div class="p-4">
                 <?php if (!empty($wo['assigned_to_name'])): ?>
@@ -217,7 +216,7 @@ $steps = [
         <div class="bg-white border rounded-xl shadow-sm overflow-hidden">
             <div class="px-4 py-3 bg-gray-50 border-b flex items-center gap-2">
                 <span>🔧</span>
-                <h2 class="text-sm font-bold text-gray-700">Pengerjaan, Testing & Dokumentasi</h2>
+                <h2 class="text-sm font-bold text-gray-700">3. Status Progress (Pengerjaan & Foto)</h2>
             </div>
             <div class="p-4">
                 <?php if (!empty($wo['action_taken'])): ?>
@@ -264,7 +263,7 @@ $steps = [
         <div class="bg-white border rounded-xl shadow-sm overflow-hidden">
             <div class="px-4 py-3 bg-gray-50 border-b flex items-center gap-2">
                 <span>💰</span>
-                <h2 class="text-sm font-bold text-gray-700">Material & Biaya</h2>
+                <h2 class="text-sm font-bold text-gray-700">4. Done (Penyelesaian & Biaya)</h2>
             </div>
             <div class="p-4">
                 <?php if (!empty($wo['material_used'])): ?>

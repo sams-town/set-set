@@ -78,10 +78,11 @@
 
             // Master Data group
             $masterNav = [
-                ['url' => 'admin/departments', 'label' => 'Departemen',    'icon' => '🏢'],
-                ['url' => 'admin/room-types',  'label' => 'Tipe Ruangan',  'icon' => '🚪'],
-                ['url' => 'admin/locations',   'label' => 'Lokasi',        'icon' => '📍'],
-                ['url' => 'admin/categories',  'label' => 'Kategori Aset', 'icon' => '🏷️'],
+                ['url' => 'admin/departments',      'label' => 'Departemen',    'icon' => '🏢'],
+                ['url' => 'admin/room-types',       'label' => 'Tipe Ruangan',  'icon' => '🚪'],
+                ['url' => 'admin/locations',        'label' => 'Lokasi',        'icon' => '📍'],
+                ['url' => 'admin/categories',       'label' => 'Kategori Aset', 'icon' => '🏷️'],
+                ['url' => 'admin/asset-templates',  'label' => 'Template Aset', 'icon' => '📋'],
             ];
 
             // Admin-only group

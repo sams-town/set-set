@@ -71,10 +71,10 @@ $v      = fn($key, $default = '') => old($key, $wo[$key] ?? $default);
       method="POST" enctype="multipart/form-data" class="space-y-5">
 <?= csrf_field() ?>
 
-<!-- ══ SECTION 1: INFORMASI PELAPOR ══════════════════════════ -->
+<!-- ══ SECTION 1: PENGINPUT (KELUHAN & PELAPOR) ══════════════ -->
 <div class="bg-white border rounded-xl p-5 shadow-sm">
     <h2 class="text-sm font-bold text-gray-700 uppercase tracking-wide mb-4 pb-2 border-b flex items-center gap-2">
-        <span class="text-blue-600">📝</span> Informasi Pelapor & Keluhan
+        <span class="text-blue-600">📝</span> 1. Penginput (Keluhan & Pelapor)
     </h2>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
@@ -164,23 +164,20 @@ $v      = fn($key, $default = '') => old($key, $wo[$key] ?? $default);
     </div>
 </div>
 
-<!-- ══ SECTION 2: ASSESSMENT TEKNISI ═════════════════════════ -->
+<!-- ══ SECTION 2: ASSESSMENT & PENUGASAN ═════════════════════ -->
 <div class="bg-white border rounded-xl p-5 shadow-sm">
     <h2 class="text-sm font-bold text-gray-700 uppercase tracking-wide mb-4 pb-2 border-b flex items-center gap-2">
-        <span class="text-orange-600">🔍</span> Assessment & Penugasan Teknisi
+        <span class="text-orange-600">🔍</span> 2. Assessment (Diagnosis & Penugasan)
     </h2>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
         <!-- Jenis Kerusakan -->
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Jenis Kerusakan</label>
-            <select name="damage_type"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
-                <option value="">-- Pilih --</option>
-                <?php foreach ($damage_types as $dt): ?>
-                <option value="<?= esc($dt) ?>" <?= $v('damage_type') === $dt ? 'selected' : '' ?>><?= esc($dt) ?></option>
-                <?php endforeach; ?>
-            </select>
+            <input type="text" name="damage_type"
+                   value="<?= esc($v('damage_type')) ?>"
+                   placeholder="Ketik jenis kerusakan..."
+                   class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
         </div>
 
         <!-- Kategori WO -->
@@ -201,7 +198,9 @@ $v      = fn($key, $default = '') => old($key, $wo[$key] ?? $default);
             <select name="type" required
                     class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
                 <?php foreach ($type_list as $t): ?>
-                <option value="<?= $t ?>" <?= $v('type', $pre_type ?? 'corrective') === $t ? 'selected' : '' ?>><?= ucfirst($t) ?></option>
+                <option value="<?= $t ?>" <?= $v('type', $pre_type ?? 'corrective') === $t ? 'selected' : '' ?>>
+                    <?= $t === 'kalibrasi_alat' ? 'Kalibrasi Alat' : ucfirst($t) ?>
+                </option>
                 <?php endforeach; ?>
             </select>
         </div>
@@ -302,11 +301,11 @@ $v      = fn($key, $default = '') => old($key, $wo[$key] ?? $default);
     </div>
 </div>
 
-<!-- ══ SECTION 3: PENGERJAAN & FOTO BEFORE/AFTER (edit only) ═ -->
+<!-- ══ SECTION 3: STATUS PROGRESS (edit only) ════════════════ -->
 <?php if ($isEdit): ?>
 <div class="bg-white border rounded-xl p-5 shadow-sm">
     <h2 class="text-sm font-bold text-gray-700 uppercase tracking-wide mb-4 pb-2 border-b flex items-center gap-2">
-        <span class="text-purple-600">🔧</span> Pengerjaan, Testing & Dokumentasi Foto
+        <span class="text-purple-600">🔧</span> 3. Status Progress (Pengerjaan & Foto)
     </h2>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
@@ -355,11 +354,11 @@ $v      = fn($key, $default = '') => old($key, $wo[$key] ?? $default);
 </div>
 <?php endif; ?>
 
-<!-- ══ SECTION 4: MATERIAL & BIAYA (edit only) ════════════════ -->
+<!-- ══ SECTION 4: DONE (PENYELESAIAN & BIAYA) (edit only) ═════ -->
 <?php if ($isEdit): ?>
 <div class="bg-white border rounded-xl p-5 shadow-sm">
     <h2 class="text-sm font-bold text-gray-700 uppercase tracking-wide mb-4 pb-2 border-b flex items-center gap-2">
-        <span class="text-green-600">💰</span> Material & Biaya
+        <span class="text-green-600">💰</span> 4. Done (Penyelesaian & Biaya)
     </h2>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 

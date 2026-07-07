@@ -214,6 +214,14 @@ $ds = $dash_stats;
             <?php endforeach; ?>
         </select>
 
+        <select name="type" class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <option value="">Semua Tipe</option>
+            <option value="corrective" <?= ($filters['type'] ?? '') === 'corrective' ? 'selected' : '' ?>>Corrective</option>
+            <option value="preventive" <?= ($filters['type'] ?? '') === 'preventive' ? 'selected' : '' ?>>Preventive</option>
+            <option value="inspection" <?= ($filters['type'] ?? '') === 'inspection' ? 'selected' : '' ?>>Inspection</option>
+            <option value="kalibrasi_alat" <?= ($filters['type'] ?? '') === 'kalibrasi_alat' ? 'selected' : '' ?>>Kalibrasi Alat</option>
+        </select>
+
         <select name="category_wo" class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
             <option value="">Semua Kategori</option>
             <?php foreach ($categories_wo as $cat): ?>
@@ -298,7 +306,7 @@ $ds = $dash_stats;
                             <?= date('d/m/Y H:i', strtotime($wo['created_at'])) ?>
                         </div>
                         <div class="text-xs text-gray-500 mt-0.5">
-                            <?= ucfirst($wo['type'] ?? '-') ?>
+                            <?= $wo['type'] === 'kalibrasi_alat' ? 'Kalibrasi Alat' : ucfirst($wo['type'] ?? '-') ?>
                         </div>
                     </td>
 

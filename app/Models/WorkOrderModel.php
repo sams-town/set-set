@@ -39,15 +39,11 @@ class WorkOrderModel
 
     // Kategori WO
     public const CATEGORIES_WO = [
-        'Hardware',
-        'Software',
-        'Jaringan',
-        'Infrastruktur',
-        'Utilitas',
-        'Kendaraan',
-        'Perabot Kantor',
-        'Fasilitas Gedung',
-        'Lainnya',
+        'Mekanikal',
+        'Elektrikal',
+        'Plumbing',
+        'Sipil',
+        'IT',
     ];
 
     public function __construct()

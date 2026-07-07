@@ -38,6 +38,26 @@
                 <span class="text-blue-600">📋</span> Informasi Dasar
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Template Aset (Hanya muncul jika ada template) -->
+                <?php if (!empty($templates)): ?>
+                <div class="md:col-span-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Pilih dari Template Aset <span class="text-xs text-gray-400">(Mengisi otomatis nama, kategori, brand, model)</span>
+                    </label>
+                    <select id="templateSelect" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                        <option value="">-- Kustom / Tanpa Template --</option>
+                        <?php foreach ($templates as $t): ?>
+                            <option value="<?= $t['id'] ?>"
+                                    data-name="<?= esc($t['name']) ?>"
+                                    data-category="<?= esc($t['category']) ?>"
+                                    data-brand="<?= esc($t['brand'] ?? '') ?>"
+                                    data-model="<?= esc($t['model'] ?? '') ?>">
+                                <?= esc($t['name']) ?> (<?= esc($t['category']) ?>)
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <?php endif; ?>
 
                 <!-- Kode Aset -->
                 <div>
@@ -136,11 +156,26 @@
                     </label>
                     <select name="status" required
                             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
-                        <?php foreach (['tersedia','dipinjam','dalam_perbaikan','dihapus'] as $s): ?>
-                            <option value="<?= $s ?>" <?= old('status', $asset['status']) === $s ? 'selected' : '' ?>>
-                                <?= ucwords(str_replace('_', ' ', $s)) ?>
-                            </option>
-                        <?php endforeach; ?>
+                        <optgroup label="🟢 Normal">
+                            <?php foreach (['Aktif', 'Standby', 'Terpasang', 'Siap Operasi'] as $s): ?>
+                                <option value="<?= $s ?>" <?= old('status', $asset['status']) === $s ? 'selected' : '' ?>><?= $s ?></option>
+                            <?php endforeach; ?>
+                        </optgroup>
+                        <optgroup label="🟡 Perhatian">
+                            <?php foreach (['Jadwal PM', 'Kalibrasi', 'Menunggu Instalasi', 'Menunggu Sparepart', 'Pengadaan'] as $s): ?>
+                                <option value="<?= $s ?>" <?= old('status', $asset['status']) === $s ? 'selected' : '' ?>><?= $s ?></option>
+                            <?php endforeach; ?>
+                        </optgroup>
+                        <optgroup label="🟠 Warning">
+                            <?php foreach (['Rusak Ringan', 'Corrective Maintenance', 'Idle', 'Mutasi'] as $s): ?>
+                                <option value="<?= $s ?>" <?= old('status', $asset['status']) === $s ? 'selected' : '' ?>><?= $s ?></option>
+                            <?php endforeach; ?>
+                        </optgroup>
+                        <optgroup label="🔴 Critical">
+                            <?php foreach (['Rusak Berat', 'Tidak Beroperasi', 'Obsolete', 'Penghapusan'] as $s): ?>
+                                <option value="<?= $s ?>" <?= old('status', $asset['status']) === $s ? 'selected' : '' ?>><?= $s ?></option>
+                            <?php endforeach; ?>
+                        </optgroup>
                     </select>
                 </div>
                 <?php endif; ?>
@@ -185,10 +220,11 @@
                     <select name="location_id"
                             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
                         <option value="">-- Pilih --</option>
-                        <?php foreach ($locations as $id => $name): ?>
-                            <option value="<?= $id ?>"
-                                <?= old('location_id', $asset['location_id'] ?? '') == $id ? 'selected' : '' ?>>
-                                <?= esc($name) ?>
+                        <?php foreach ($locations_with_dept as $loc): ?>
+                            <option value="<?= $loc['id'] ?>"
+                                    data-department-id="<?= esc($loc['department_id'] ?? '') ?>"
+                                    <?= old('location_id', $asset['location_id'] ?? '') == $loc['id'] ? 'selected' : '' ?>>
+                                <?= esc($loc['name']) ?><?= $loc['building'] ? ' — ' . esc($loc['building']) : '' ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -348,6 +384,52 @@
         </div>
 
         <!-- ══════════════════════════════════════════════════════════
+             SECTION 4.5 — KALIBRASI ALAT MEDIS
+             ══════════════════════════════════════════════════════════ -->
+        <div class="bg-white border rounded-xl p-5 shadow-sm">
+            <h2 class="text-sm font-bold text-gray-700 uppercase tracking-wide mb-4 pb-2 border-b flex items-center gap-2">
+                <span class="text-teal-600">🔬</span> Kalibrasi Alat Medis
+            </h2>
+            <div class="space-y-4">
+                <label class="flex items-center gap-2 text-sm text-gray-700 font-medium cursor-pointer">
+                    <input type="checkbox" name="requires_calibration" id="requiresCalibration" value="1"
+                           <?= old('requires_calibration', $asset['requires_calibration'] ?? 0) == 1 ? 'checked' : '' ?>
+                           class="rounded text-teal-600 focus:ring-teal-400 h-4 w-4">
+                    Memerlukan Kalibrasi Berkala
+                </label>
+
+                <div id="calibrationFields" class="grid grid-cols-1 md:grid-cols-2 gap-4 hidden">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Kalibrasi Terakhir</label>
+                        <input type="date" name="last_calibration_date"
+                               value="<?= old('last_calibration_date', $asset['last_calibration_date'] ?? '') ?>"
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-400 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Jadwal Kalibrasi Berikutnya</label>
+                        <input type="date" name="next_calibration_date"
+                               value="<?= old('next_calibration_date', $asset['next_calibration_date'] ?? '') ?>"
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-400 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nomor Sertifikat Kalibrasi</label>
+                        <input type="text" name="calibration_certificate"
+                               value="<?= old('calibration_certificate', $asset['calibration_certificate'] ?? '') ?>"
+                               placeholder="Sertifikat/Keterangan Lolos Uji"
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-400 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Lembaga / Vendor Penguji</label>
+                        <input type="text" name="calibration_vendor"
+                               value="<?= old('calibration_vendor', $asset['calibration_vendor'] ?? '') ?>"
+                               placeholder="Contoh: BPFK Surabaya"
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-400 focus:outline-none">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════════════════════
              SECTION 5 — FOTO ASET
              ══════════════════════════════════════════════════════════ -->
         <div class="bg-white border rounded-xl p-5 shadow-sm">
@@ -444,10 +526,83 @@ function calcAge() {
     ageField.value = label.trim() || '-';
 }
 
+// Kalibrasi toggle
+const requiresCalibration = document.getElementById('requiresCalibration');
+const calibrationFields = document.getElementById('calibrationFields');
+
+function toggleCalibration() {
+    if (requiresCalibration && requiresCalibration.checked) {
+        calibrationFields.classList.remove('hidden');
+    } else if (calibrationFields) {
+        calibrationFields.classList.add('hidden');
+    }
+}
+
+// Template selection auto-fill
+const templateSelect = document.getElementById('templateSelect');
+const nameInput = document.querySelector('input[name="name"]');
+const categorySelect = document.querySelector('select[name="category"]');
+const brandInput = document.querySelector('input[name="brand"]');
+const modelInput = document.querySelector('input[name="model"]');
+
+function handleTemplateChange() {
+    if (!templateSelect) return;
+    const opt = templateSelect.options[templateSelect.selectedIndex];
+    if (opt && opt.value !== '') {
+        if (nameInput) nameInput.value = opt.getAttribute('data-name') || '';
+        if (categorySelect) categorySelect.value = opt.getAttribute('data-category') || '';
+        if (brandInput) brandInput.value = opt.getAttribute('data-brand') || '';
+        if (modelInput) modelInput.value = opt.getAttribute('data-model') || '';
+    }
+}
+
+// Department - Location dynamic filter
+const deptSelect = document.querySelector('select[name="department_id"]');
+const locSelect = document.querySelector('select[name="location_id"]');
+
+let allLocOptions = [];
+
+function initLocationsFilter() {
+    if (!deptSelect || !locSelect) return;
+    allLocOptions = Array.from(locSelect.options);
+    
+    function filterLocations() {
+        const selectedDeptId = deptSelect.value;
+        const currentVal = locSelect.value;
+        
+        locSelect.innerHTML = '';
+        locSelect.appendChild(allLocOptions[0]); // Keep "-- Pilih --"
+        
+        allLocOptions.forEach(opt => {
+            if (opt.value === '') return;
+            const optDeptId = opt.getAttribute('data-department-id');
+            if (!selectedDeptId || !optDeptId || optDeptId === selectedDeptId) {
+                locSelect.appendChild(opt);
+            }
+        });
+        
+        locSelect.value = currentVal;
+    }
+    
+    deptSelect.addEventListener('change', filterLocations);
+    filterLocations();
+}
+
 // Init saat load
 document.addEventListener('DOMContentLoaded', () => {
     calcDepreciation();
     calcAge();
+    
+    if (requiresCalibration) {
+        requiresCalibration.addEventListener('change', toggleCalibration);
+        toggleCalibration();
+    }
+    
+    if (templateSelect) {
+        templateSelect.addEventListener('change', handleTemplateChange);
+    }
+    
+    initLocationsFilter();
 });
 </script>
 

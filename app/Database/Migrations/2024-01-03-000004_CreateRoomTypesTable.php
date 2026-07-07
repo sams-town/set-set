@@ -69,12 +69,15 @@ class CreateRoomTypesTable extends Migration
         $userFields = $db->getFieldNames('users');
         $addUser    = [];
 
+        // department_id is already added in AlterUsersAddPhone migration, so we skip it.
+        /*
         if (! in_array('department_id', $userFields)) {
             $addUser['department_id'] = [
                 'type' => 'INT', 'constraint' => 11, 'unsigned' => true,
                 'null' => true, 'after' => 'phone',
             ];
         }
+        */
         if (! in_array('avatar', $userFields)) {
             $addUser['avatar'] = [
                 'type' => 'VARCHAR', 'constraint' => 255,

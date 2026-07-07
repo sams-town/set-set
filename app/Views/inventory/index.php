@@ -14,16 +14,17 @@
 </div>
 
 <!-- ── Stats Cards ────────────────────────────────────────────── -->
-<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-5">
+<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3 mb-5">
     <?php foreach ([
-        ['total',           'Total',          'bg-blue-50 text-blue-700',    'border-blue-200'],
-        ['tersedia',        'Tersedia',        'bg-green-50 text-green-700',  'border-green-200'],
-        ['dipinjam',        'Dipinjam',        'bg-yellow-50 text-yellow-700','border-yellow-200'],
-        ['dalam_perbaikan', 'Perbaikan',       'bg-orange-50 text-orange-700','border-orange-200'],
-        ['dihapus',         'Dihapus',         'bg-red-50 text-red-700',      'border-red-200'],
-        ['warranty_soon',   'Garansi ~30h',    'bg-purple-50 text-purple-700','border-purple-200'],
+        ['total',            'Total',          'bg-blue-50 text-blue-700',    'border-blue-200'],
+        ['normal',           'Normal 🟢',      'bg-green-50 text-green-700',  'border-green-200'],
+        ['perhatian',        'Perhatian 🟡',   'bg-yellow-50 text-yellow-800','border-yellow-200'],
+        ['warning',          'Warning 🟠',     'bg-orange-50 text-orange-700','border-orange-200'],
+        ['critical',         'Critical 🔴',    'bg-red-50 text-red-700',      'border-red-200'],
+        ['calibration_soon', 'Kalibrasi ~30h', 'bg-teal-50 text-teal-700',    'border-teal-200'],
+        ['warranty_soon',    'Garansi ~30h',    'bg-purple-50 text-purple-700','border-purple-200'],
     ] as [$key, $label, $color, $border]): ?>
-    <div class="<?= $color ?> border <?= $border ?> rounded-xl px-4 py-3 text-center">
+    <div class="<?= $color ?> border <?= $border ?> rounded-xl px-3 py-3 text-center shadow-xs">
         <div class="text-2xl font-bold"><?= $stats[$key] ?? 0 ?></div>
         <div class="text-xs font-medium mt-0.5"><?= $label ?></div>
     </div>
@@ -38,13 +39,28 @@
                placeholder="Cari nama / kode / brand / type..."
                class="flex-1 min-w-[180px] border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
 
-        <select name="status" class="min-w-[130px] border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+        <select name="status" class="min-w-[150px] border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
             <option value="">Semua Status</option>
-            <?php foreach (['tersedia','dipinjam','dalam_perbaikan','dihapus'] as $s): ?>
-                <option value="<?= $s ?>" <?= ($filters['status'] ?? '') === $s ? 'selected' : '' ?>>
-                    <?= ucwords(str_replace('_', ' ', $s)) ?>
-                </option>
-            <?php endforeach; ?>
+            <optgroup label="🟢 Normal">
+                <?php foreach (['Aktif', 'Standby', 'Terpasang', 'Siap Operasi'] as $s): ?>
+                    <option value="<?= $s ?>" <?= ($filters['status'] ?? '') === $s ? 'selected' : '' ?>><?= $s ?></option>
+                <?php endforeach; ?>
+            </optgroup>
+            <optgroup label="🟡 Perhatian">
+                <?php foreach (['Jadwal PM', 'Kalibrasi', 'Menunggu Instalasi', 'Menunggu Sparepart', 'Pengadaan'] as $s): ?>
+                    <option value="<?= $s ?>" <?= ($filters['status'] ?? '') === $s ? 'selected' : '' ?>><?= $s ?></option>
+                <?php endforeach; ?>
+            </optgroup>
+            <optgroup label="🟠 Warning">
+                <?php foreach (['Rusak Ringan', 'Corrective Maintenance', 'Idle', 'Mutasi'] as $s): ?>
+                    <option value="<?= $s ?>" <?= ($filters['status'] ?? '') === $s ? 'selected' : '' ?>><?= $s ?></option>
+                <?php endforeach; ?>
+            </optgroup>
+            <optgroup label="🔴 Critical">
+                <?php foreach (['Rusak Berat', 'Tidak Beroperasi', 'Obsolete', 'Penghapusan'] as $s): ?>
+                    <option value="<?= $s ?>" <?= ($filters['status'] ?? '') === $s ? 'selected' : '' ?>><?= $s ?></option>
+                <?php endforeach; ?>
+            </optgroup>
         </select>
 
         <select name="condition" class="min-w-[130px] border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
@@ -122,7 +138,18 @@
                 foreach ($assets as $a):
                     $condMap   = ['baik' => 'bg-green-100 text-green-700', 'rusak_ringan' => 'bg-yellow-100 text-yellow-700', 'rusak_berat' => 'bg-red-100 text-red-700'];
                     $condLabel = ['baik' => 'Baik', 'rusak_ringan' => 'Rusak Ringan', 'rusak_berat' => 'Rusak Berat'];
-                    $stMap     = ['tersedia' => 'bg-green-100 text-green-700', 'dipinjam' => 'bg-yellow-100 text-yellow-700', 'dalam_perbaikan' => 'bg-orange-100 text-orange-700', 'dihapus' => 'bg-red-100 text-red-700'];
+                    $getStatusBadgeClass = function($status) {
+                        $normalList = ['Aktif', 'Standby', 'Terpasang', 'Siap Operasi', 'tersedia'];
+                        $perhatianList = ['Jadwal PM', 'Kalibrasi', 'Menunggu Instalasi', 'Menunggu Sparepart', 'Pengadaan'];
+                        $warningList = ['Rusak Ringan', 'Corrective Maintenance', 'Idle', 'Mutasi', 'dalam_perbaikan', 'diperbaiki'];
+                        $criticalList = ['Rusak Berat', 'Tidak Beroperasi', 'Obsolete', 'Penghapusan', 'dihapus'];
+
+                        if (in_array($status, $normalList)) return 'bg-green-100 text-green-700';
+                        if (in_array($status, $perhatianList)) return 'bg-yellow-100 text-yellow-800 border border-yellow-200';
+                        if (in_array($status, $warningList)) return 'bg-orange-100 text-orange-700';
+                        if (in_array($status, $criticalList)) return 'bg-red-100 text-red-700';
+                        return 'bg-gray-100 text-gray-700';
+                    };
                     $scMap     = ['baru' => 'bg-blue-100 text-blue-700', '2nd' => 'bg-amber-100 text-amber-700', 'bekas' => 'bg-gray-100 text-gray-600'];
 
                     // Garansi
@@ -211,6 +238,19 @@
                         <?php if ($a['pm_interval_days']): ?>
                         <div class="text-gray-400">PM: <?= $a['pm_interval_days'] ?> hari</div>
                         <?php endif; ?>
+                        <?php if ($a['requires_calibration']): ?>
+                        <div class="mt-0.5 font-medium text-teal-600">
+                            🔬
+                            <?php if ($a['next_calibration_date']):
+                                $nextCal = strtotime($a['next_calibration_date']);
+                                $cDays = (int) (($nextCal - time()) / 86400);
+                                if ($cDays < 0) echo '<span class="text-red-500 font-bold">Kalibrasi Expired</span>';
+                                else echo 'Kal: ' . date('d/m/y', $nextCal);
+                            else:
+                                echo 'Belum Kalibrasi';
+                            endif; ?>
+                        </div>
+                        <?php endif; ?>
                     </td>
 
                     <!-- Kondisi -->
@@ -222,8 +262,8 @@
 
                     <!-- Status -->
                     <td class="px-3 py-2">
-                        <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium <?= $stMap[$a['status']] ?? 'bg-gray-100 text-gray-600' ?>">
-                            <?= ucwords(str_replace('_', ' ', $a['status'])) ?>
+                        <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium <?= $getStatusBadgeClass($a['status']) ?>">
+                            <?= esc($a['status']) ?>
                         </span>
                     </td>
 

@@ -62,10 +62,19 @@ class DashboardKpiModel
             'dihapus'         => 0,
         ];
         foreach ($statusRows as $r) {
-            if (array_key_exists($r['status'], $out)) {
-                $out[$r['status']] = (int) $r['n'];
+            $status = $r['status'];
+            $n = (int) $r['n'];
+
+            if (in_array($status, ['Aktif', 'Standby', 'Terpasang', 'Siap Operasi', 'tersedia'])) {
+                $out['tersedia'] += $n;
+            } elseif (in_array($status, ['Jadwal PM', 'Kalibrasi', 'Menunggu Instalasi', 'Menunggu Sparepart', 'Pengadaan', 'Corrective Maintenance', 'Rusak Ringan', 'dalam_perbaikan', 'diperbaiki'])) {
+                $out['dalam_perbaikan'] += $n;
+            } elseif (in_array($status, ['Mutasi', 'dipinjam'])) {
+                $out['dipinjam'] += $n;
+            } elseif (in_array($status, ['Rusak Berat', 'Tidak Beroperasi', 'Obsolete', 'Penghapusan', 'dihapus'])) {
+                $out['dihapus'] += $n;
             }
-            $out['total'] += (int) $r['n'];
+            $out['total'] += $n;
         }
 
         // Kondisi
