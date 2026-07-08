@@ -277,9 +277,11 @@
                                title="Detail" class="p-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs">👁</a>
                             <a href="<?= base_url('admin/inventory/' . $a['id'] . '/edit') ?>"
                                title="Edit" class="p-1.5 rounded-lg bg-yellow-50 hover:bg-yellow-100 text-yellow-600 text-xs">✏️</a>
+                            <?php if (session()->get('role') === 'admin'): ?>
                             <button type="button"
                                     onclick="confirmDelete('<?= base_url('admin/inventory/' . $a['id'] . '/delete') ?>', '<?= esc($a['name']) ?>')"
                                     class="p-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 text-xs">🗑</button>
+                            <?php endif; ?>
                         </div>
                     </td>
                 </tr>

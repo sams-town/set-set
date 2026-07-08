@@ -236,6 +236,14 @@ class WorkOrderController extends BaseController
             return redirect()->to('/admin/work-orders')->with('error', 'Work Order tidak ditemukan.');
         }
 
+        $role = session()->get('role');
+        $userId = (int) session()->get('user_id');
+        if ($role === 'technician') {
+            if ((int) $wo['assigned_to'] !== $userId) {
+                return redirect()->to('/admin/work-orders')->with('error', 'Anda hanya dapat merespon/mengedit Work Order yang ditugaskan kepada Anda.');
+            }
+        }
+
         return view('work_orders/form', [
             'title'         => 'Edit Work Order',
             'wo'            => $wo,
@@ -263,6 +271,14 @@ class WorkOrderController extends BaseController
         $wo = $this->model->getById($id);
         if (! $wo) {
             return redirect()->to('/admin/work-orders')->with('error', 'Work Order tidak ditemukan.');
+        }
+
+        $role = session()->get('role');
+        $userId = (int) session()->get('user_id');
+        if ($role === 'technician') {
+            if ((int) $wo['assigned_to'] !== $userId) {
+                return redirect()->to('/admin/work-orders')->with('error', 'Anda hanya dapat merespon/mengedit Work Order yang ditugaskan kepada Anda.');
+            }
         }
 
         if (! $this->validate($this->updateRules())) {
@@ -329,6 +345,10 @@ class WorkOrderController extends BaseController
     // ================================================================
     public function delete(int $id)
     {
+        if (session()->get('role') !== 'admin') {
+            return redirect()->to('/admin/work-orders')->with('error', 'Hanya administrator yang dapat menghapus Work Order.');
+        }
+
         $wo = $this->model->getById($id);
         if (! $wo) {
             return redirect()->to('/admin/work-orders')->with('error', 'Work Order tidak ditemukan.');

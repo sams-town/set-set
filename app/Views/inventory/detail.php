@@ -57,10 +57,12 @@ $scLabel = ['baru' => '🆕 Baru', '2nd' => '🔄 2nd', 'bekas' => '📦 Bekas']
            class="inline-flex items-center gap-1.5 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium px-3 py-2 rounded-lg transition-colors">
             ✏️ Edit
         </a>
+        <?php if (session()->get('role') === 'admin'): ?>
         <button onclick="confirmDelete('<?= base_url('admin/inventory/' . $asset['id'] . '/delete') ?>', '<?= esc($asset['name']) ?>')"
                 class="inline-flex items-center gap-1.5 bg-red-600 hover:bg-red-700 text-white text-sm font-medium px-3 py-2 rounded-lg transition-colors">
             🗑 Hapus
         </button>
+        <?php endif; ?>
     </div>
 </div>
 

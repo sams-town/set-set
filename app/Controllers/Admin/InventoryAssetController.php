@@ -347,6 +347,10 @@ class InventoryAssetController extends BaseController
     // ---------------------------------------------------------------
     public function delete(int $id)
     {
+        if (session()->get('role') !== 'admin') {
+            return redirect()->to('/admin/inventory')->with('error', 'Hanya administrator yang dapat menghapus aset.');
+        }
+
         $asset = $this->model->getById($id);
         if (! $asset) {
             return redirect()->to('/admin/inventory')->with('error', 'Aset tidak ditemukan.');

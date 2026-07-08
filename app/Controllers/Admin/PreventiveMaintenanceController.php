@@ -234,6 +234,10 @@ class PreventiveMaintenanceController extends BaseController
     // ================================================================
     public function delete(int $id)
     {
+        if (session()->get('role') !== 'admin') {
+            return redirect()->to('/admin/pm')->with('error', 'Hanya administrator yang dapat menghapus jadwal PM.');
+        }
+
         $schedule = $this->model->getById($id);
         if (! $schedule) {
             return redirect()->to('/admin/pm')->with('error', 'Schedule tidak ditemukan.');

@@ -8,12 +8,15 @@ $uid = $current_user_id;
 $role= $current_role;
 
 // Tombol aksi berdasarkan status
+$isAdminOrPembelian = in_array($role, ['admin', 'pembelian']);
 $canSubmit  = in_array($req['status'], ['draft','rejected']);
-$canApprove = ($req['status'] === 'pending_atasan') ||
-              ($req['status'] === 'pending_direktur' && $role === 'admin');
-$canReject  = in_array($req['status'], ['pending_atasan','pending_direktur']);
-$canRfq     = $req['status'] === 'approved';
-$canPo      = in_array($req['status'], ['approved','rfq']);
+$canApprove = $isAdminOrPembelian && (
+                  ($req['status'] === 'pending_atasan') ||
+                  ($req['status'] === 'pending_direktur' && $role === 'admin')
+              );
+$canReject  = $isAdminOrPembelian && in_array($req['status'], ['pending_atasan','pending_direktur']);
+$canRfq     = $isAdminOrPembelian && ($req['status'] === 'approved');
+$canPo      = $isAdminOrPembelian && in_array($req['status'], ['approved','rfq']);
 $canEdit    = in_array($req['status'], ['draft','rejected']);
 ?>
 

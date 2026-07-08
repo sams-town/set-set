@@ -380,9 +380,14 @@ $ds = $dash_stats;
                         <div class="flex items-center justify-center gap-1">
                             <a href="<?= base_url('admin/work-orders/' . $wo['id']) ?>"
                                title="Detail" class="p-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs">👁</a>
+                            <?php 
+                            $canEdit = (session()->get('role') === 'admin' || session()->get('role') === 'user' || (session()->get('role') === 'technician' && (int)$wo['assigned_to'] === (int)session()->get('user_id')));
+                            if ($canEdit): 
+                            ?>
                             <a href="<?= base_url('admin/work-orders/' . $wo['id'] . '/edit') ?>"
                                title="Edit" class="p-1.5 rounded-lg bg-yellow-50 hover:bg-yellow-100 text-yellow-600 text-xs">✏️</a>
-                            <?php if (in_array($wo['status'], ['open', 'cancelled'])): ?>
+                            <?php endif; ?>
+                            <?php if (session()->get('role') === 'admin' && in_array($wo['status'], ['open', 'cancelled'])): ?>
                             <button onclick="confirmDelete('<?= base_url('admin/work-orders/' . $wo['id'] . '/delete') ?>', '<?= esc($wo['wo_code']) ?>')"
                                     class="p-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 text-xs">🗑</button>
                             <?php endif; ?>

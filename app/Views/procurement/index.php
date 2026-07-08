@@ -23,6 +23,7 @@ $ds  = $dash_stats;
 <div class="mb-4 px-4 py-3 bg-red-100 text-red-800 rounded-xl text-sm">❌ <?= $msg ?></div>
 <?php endif; ?>
 
+<?php if (in_array(session()->get('role'), ['admin', 'pembelian'])): ?>
 <!-- ══ DASHBOARD KPI — 7 KARTU ══════════════════════════════════ -->
 <div class="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-7 gap-3 mb-5">
     <?php
@@ -113,6 +114,7 @@ $ds  = $dash_stats;
         <?php endforeach; ?>
     </div>
 </div>
+<?php endif; ?>
 
 <!-- ══ FILTER ════════════════════════════════════════════════════ -->
 <div class="bg-white border rounded-xl px-4 py-3 mb-4 shadow-sm">

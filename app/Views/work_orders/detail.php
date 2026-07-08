@@ -72,11 +72,16 @@ $steps = [
         </div>
     </div>
     <div class="flex gap-2 flex-wrap">
+        <?php 
+        $canEdit = (session()->get('role') === 'admin' || session()->get('role') === 'user' || (session()->get('role') === 'technician' && (int)$wo['assigned_to'] === (int)session()->get('user_id')));
+        if ($canEdit): 
+        ?>
         <a href="<?= base_url('admin/work-orders/' . $wo['id'] . '/edit') ?>"
            class="inline-flex items-center gap-1.5 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium px-3 py-2 rounded-lg transition-colors">
             ✏️ Edit
         </a>
-        <?php if (in_array($wo['status'], ['open','cancelled'])): ?>
+        <?php endif; ?>
+        <?php if (session()->get('role') === 'admin' && in_array($wo['status'], ['open','cancelled'])): ?>
         <button onclick="confirmDelete('<?= base_url('admin/work-orders/' . $wo['id'] . '/delete') ?>', '<?= esc($wo['wo_code']) ?>')"
                 class="inline-flex items-center gap-1.5 bg-red-600 hover:bg-red-700 text-white text-sm font-medium px-3 py-2 rounded-lg transition-colors">
             🗑 Hapus

@@ -64,17 +64,22 @@
             // Helper: cek apakah URL aktif
             $isActive = fn($url) => str_starts_with($uri, $url);
 
-            // Menu utama
-            $mainNav = [
-                ['url' => 'admin/dashboard',   'label' => 'Dashboard',         'icon' => '📊'],
-                ['url' => 'admin/inventory',   'label' => 'Inventory Aset',    'icon' => '🗃️'],
-                ['url' => 'admin/procurement', 'label' => 'Procurement',       'icon' => '🛒'],
-                ['url' => 'admin/work-orders', 'label' => 'Work Order',        'icon' => '📋'],
-                ['url' => 'admin/pm',          'label' => 'Preventive PM',     'icon' => '🛡️'],
-                ['url' => 'admin/cm',          'label' => 'Corrective Maint.', 'icon' => '🔧'],
-                ['url' => 'admin/borrows',     'label' => 'Peminjaman',        'icon' => '🔄'],
-                ['url' => 'admin/reports',     'label' => 'Laporan',           'icon' => '📑'],
+            // Menu utama dengan filter peran/role
+            $allNav = [
+                ['url' => 'admin/dashboard',   'label' => 'Dashboard',         'icon' => '📊', 'roles' => ['admin', 'user']],
+                ['url' => 'admin/inventory',   'label' => 'Inventory Aset',    'icon' => '🗃️', 'roles' => ['admin', 'user']],
+                ['url' => 'admin/procurement', 'label' => 'Procurement',       'icon' => '🛒', 'roles' => ['admin', 'user', 'pembelian']],
+                ['url' => 'admin/work-orders', 'label' => 'Work Order',        'icon' => '📋', 'roles' => ['admin', 'user', 'technician']],
+                ['url' => 'admin/pm',          'label' => 'Preventive PM',     'icon' => '🛡️', 'roles' => ['admin', 'technician']],
+                ['url' => 'admin/cm',          'label' => 'Corrective Maint.', 'icon' => '🔧', 'roles' => ['admin', 'technician']],
+                ['url' => 'admin/borrows',     'label' => 'Peminjaman',        'icon' => '🔄', 'roles' => ['admin', 'user']],
+                ['url' => 'admin/reports',     'label' => 'Laporan',           'icon' => '📑', 'roles' => ['admin']],
             ];
+
+            $userRole = session()->get('role');
+            $mainNav = array_filter($allNav, function($item) use ($userRole) {
+                return in_array($userRole, $item['roles']);
+            });
 
             // Master Data group
             $masterNav = [
@@ -107,7 +112,8 @@
             </a>
             <?php endforeach; ?>
 
-            <!-- Master Data (dropdown) -->
+            <!-- Master Data (dropdown, Admin Only) -->
+            <?php if (session()->get('role') === 'admin'): ?>
             <div x-data="{ open: <?= $masterActive ? 'true' : 'false' ?> }">
                 <button @click="open = !open"
                         class="w-full flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition-colors
@@ -132,6 +138,7 @@
                     <?php endforeach; ?>
                 </div>
             </div>
+            <?php endif; ?>
 
             <?php if (session()->get('role') === 'admin'): ?>
             <!-- Divider -->

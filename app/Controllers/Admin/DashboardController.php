@@ -26,6 +26,14 @@ class DashboardController extends BaseController
     // ---------------------------------------------------------------
     public function index()
     {
+        $role = session()->get('role');
+        if ($role === 'pembelian') {
+            return redirect()->to('/admin/procurement');
+        }
+        if ($role === 'technician') {
+            return redirect()->to('/admin/work-orders');
+        }
+
         // ── A. Aset ────────────────────────────────────────────────
         $assetSummary     = $this->kpi->assetSummary();
         $totalValue       = $this->kpi->totalAssetValue();
