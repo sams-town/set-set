@@ -338,6 +338,37 @@ class WorkOrderController extends BaseController
 
         $this->model->update($id, $updateData);
 
+        // Sync asset status & condition to WO status (always, to allow correction/existing updates)
+        $assetUpdate = [];
+        if ($newStatus === 'done') {
+            $assetUpdate = [
+                'status'    => 'Standby',
+                'condition' => 'baik',
+            ];
+        } elseif ($newStatus === 'waiting_part') {
+            $assetUpdate = [
+                'status'    => 'Menunggu Sparepart',
+                'condition' => 'rusak_ringan',
+            ];
+        } elseif (in_array($newStatus, ['open', 'in_progress'])) {
+            $assetUpdate = [
+                'status'    => 'Corrective Maintenance',
+                'condition' => 'rusak_ringan',
+            ];
+        } elseif ($newStatus === 'cancelled') {
+            $assetUpdate = [
+                'status'    => 'Standby',
+                'condition' => 'baik',
+            ];
+        }
+
+        if (!empty($assetUpdate)) {
+            $db = \Config\Database::connect();
+            $db->table('assets')
+                ->where('id', (int) $wo['asset_id'])
+                ->update($assetUpdate);
+        }
+
         if ($newAssigned && $oldAssigned !== $newAssigned) {
             $updatedWo = $this->model->getById($id);
             if ($updatedWo && !empty($updatedWo['assigned_to_phone'])) {
@@ -361,37 +392,6 @@ class WorkOrderController extends BaseController
                 (float) ($this->request->getPost('labor_cost') ?: 0),
                 $id
             );
-
-            // Sync asset status & condition to WO status
-            $assetUpdate = [];
-            if ($newStatus === 'done') {
-                $assetUpdate = [
-                    'status'    => 'Standby',
-                    'condition' => 'baik',
-                ];
-            } elseif ($newStatus === 'waiting_part') {
-                $assetUpdate = [
-                    'status'    => 'Menunggu Sparepart',
-                    'condition' => 'rusak_ringan',
-                ];
-            } elseif (in_array($newStatus, ['open', 'in_progress'])) {
-                $assetUpdate = [
-                    'status'    => 'Corrective Maintenance',
-                    'condition' => 'rusak_ringan',
-                ];
-            } elseif ($newStatus === 'cancelled') {
-                $assetUpdate = [
-                    'status'    => 'Standby',
-                    'condition' => 'baik',
-                ];
-            }
-
-            if (!empty($assetUpdate)) {
-                $db = \Config\Database::connect();
-                $db->table('assets')
-                    ->where('id', (int) $wo['asset_id'])
-                    ->update($assetUpdate);
-            }
 
             $updatedWo = $this->model->getById($id);
             if ($updatedWo) { $this->notifyWoStatusChange($updatedWo, $oldStatus); }
