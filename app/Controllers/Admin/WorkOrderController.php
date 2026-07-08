@@ -320,7 +320,22 @@ class WorkOrderController extends BaseController
             'notes'            => $this->request->getPost('notes'),
         ];
 
+        $oldAssigned = $wo['assigned_to'] ? (int) $wo['assigned_to'] : null;
+        $newAssigned = $this->request->getPost('assigned_to') ? (int) $this->request->getPost('assigned_to') : null;
+
         $this->model->update($id, $updateData);
+
+        if ($newAssigned && $oldAssigned !== $newAssigned) {
+            $updatedWo = $this->model->getById($id);
+            if ($updatedWo && !empty($updatedWo['assigned_to_phone'])) {
+                try {
+                    $message = "Halo " . $updatedWo['assigned_to_name'] . ", Anda telah ditunjuk untuk menyelesaikan Work Order berikut:\n\n" . WhatsAppService::buildWoNewMessage($updatedWo);
+                    $this->wa->send($updatedWo['assigned_to_phone'], $message);
+                } catch (\Throwable $e) {
+                    log_message('error', '[WA notifyAssign] ' . $e->getMessage());
+                }
+            }
+        }
 
         // Log perubahan status
         if ($oldStatus !== $newStatus) {
@@ -562,6 +577,9 @@ class WorkOrderController extends BaseController
             $this->wa->sendToAdmins($message);
             if (! empty($wo['requested_by_phone'])) {
                 $this->wa->send($wo['requested_by_phone'], $message);
+            }
+            if (! empty($wo['assigned_to_phone'])) {
+                $this->wa->send($wo['assigned_to_phone'], $message);
             }
         } catch (\Throwable $e) {
             log_message('error', '[WA notifyWoStatusChange] ' . $e->getMessage());

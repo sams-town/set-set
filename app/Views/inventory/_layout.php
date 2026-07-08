@@ -69,7 +69,7 @@
                 ['url' => 'admin/dashboard',   'label' => 'Dashboard',         'icon' => '📊', 'roles' => ['admin']],
                 ['url' => 'admin/inventory',   'label' => 'Inventory Aset',    'icon' => '🗃️', 'roles' => ['admin', 'user']],
                 ['url' => 'admin/procurement', 'label' => 'Procurement',       'icon' => '🛒', 'roles' => ['admin', 'user', 'pembelian']],
-                ['url' => 'admin/work-orders', 'label' => 'Work Order',        'icon' => '📋', 'roles' => ['admin', 'user', 'technician']],
+                ['url' => 'admin/work-orders', 'label' => 'Work Order',        'icon' => '📋', 'roles' => ['admin', 'user']],
                 ['url' => 'admin/pm',          'label' => 'Preventive PM',     'icon' => '🛡️', 'roles' => ['admin', 'technician']],
                 ['url' => 'admin/cm',          'label' => 'Corrective Maint.', 'icon' => '🔧', 'roles' => ['admin', 'technician']],
                 ['url' => 'admin/borrows',     'label' => 'Peminjaman',        'icon' => '🔄', 'roles' => ['admin', 'user']],

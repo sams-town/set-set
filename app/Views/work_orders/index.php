@@ -32,10 +32,12 @@ $ds = $dash_stats;
             <?php endif; ?>
         </p>
     </div>
+    <?php if (session()->get('role') !== 'technician'): ?>
     <a href="<?= base_url('admin/work-orders/new') ?>"
        class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors shadow-sm">
         + Buat WO Baru
     </a>
+    <?php endif; ?>
 </div>
 
 <!-- ================================================================
