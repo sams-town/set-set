@@ -432,7 +432,16 @@ class WorkOrderModel
         if (!empty($filters['priority']))    { $builder->where('wo.priority', $filters['priority']); }
         if (!empty($filters['type']))        { $builder->where('wo.type', $filters['type']); }
         if (!empty($filters['assigned_to'])) { $builder->where('wo.assigned_to', $filters['assigned_to']); }
-        if (!empty($filters['department_id'])){ $builder->where('wo.department_id', $filters['department_id']); }
+        if (session()->get('role') === 'technician') {
+            $techId = (int) session()->get('user_id');
+            $deptId = session()->get('department_id') ? (int) session()->get('department_id') : 0;
+            $builder->groupStart()
+                ->where('wo.assigned_to', $techId)
+                ->orWhere('wo.department_id', $deptId)
+                ->groupEnd();
+        } else {
+            if (!empty($filters['department_id'])){ $builder->where('wo.department_id', $filters['department_id']); }
+        }
         if (!empty($filters['category_wo'])) { $builder->where('wo.category_wo', $filters['category_wo']); }
         if (!empty($filters['overdue'])) {
             $builder->where('wo.target_date IS NOT NULL', null, false)

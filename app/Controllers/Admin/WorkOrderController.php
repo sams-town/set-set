@@ -207,12 +207,16 @@ class WorkOrderController extends BaseController
             return redirect()->to('/admin/work-orders')->with('error', 'Work Order tidak ditemukan.');
         }
 
-        // Guard: non-admin hanya bisa lihat WO dari dept sendiri
+        // Guard: non-admin hanya bisa lihat WO dari dept sendiri, kecuali teknisi yang ditugaskan
         $deptScope = $this->getDeptScope();
-        if ($deptScope !== null && !empty($wo['department_id'])
-            && (int) $wo['department_id'] !== $deptScope) {
-            return redirect()->to('/admin/work-orders')
-                ->with('error', 'Anda tidak memiliki akses ke Work Order ini.');
+        $role = session()->get('role');
+        $userId = (int) session()->get('user_id');
+        if ($deptScope !== null && !empty($wo['department_id'])) {
+            $isAssignedTech = ($role === 'technician' && (int)$wo['assigned_to'] === $userId);
+            if ((int)$wo['department_id'] !== $deptScope && !$isAssignedTech) {
+                return redirect()->to('/admin/work-orders')
+                    ->with('error', 'Anda tidak memiliki akses ke Work Order ini.');
+            }
         }
 
         // Hitung SLA status
