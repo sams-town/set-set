@@ -183,6 +183,15 @@ class WorkOrderController extends BaseController
                 ->with('error', 'Gagal menyimpan Work Order. Silakan coba lagi.');
         }
 
+        // Sync asset status & condition to Corrective Maintenance
+        $db = \Config\Database::connect();
+        $db->table('assets')
+            ->where('id', (int) $this->request->getPost('asset_id'))
+            ->update([
+                'status'    => 'Corrective Maintenance',
+                'condition' => 'rusak_ringan',
+            ]);
+
         $this->logModel->record(
             (int) $this->request->getPost('asset_id'),
             'perbaikan_mulai',
@@ -352,6 +361,37 @@ class WorkOrderController extends BaseController
                 (float) ($this->request->getPost('labor_cost') ?: 0),
                 $id
             );
+
+            // Sync asset status & condition to WO status
+            $assetUpdate = [];
+            if ($newStatus === 'done') {
+                $assetUpdate = [
+                    'status'    => 'Standby',
+                    'condition' => 'baik',
+                ];
+            } elseif ($newStatus === 'waiting_part') {
+                $assetUpdate = [
+                    'status'    => 'Menunggu Sparepart',
+                    'condition' => 'rusak_ringan',
+                ];
+            } elseif (in_array($newStatus, ['open', 'in_progress'])) {
+                $assetUpdate = [
+                    'status'    => 'Corrective Maintenance',
+                    'condition' => 'rusak_ringan',
+                ];
+            } elseif ($newStatus === 'cancelled') {
+                $assetUpdate = [
+                    'status'    => 'Standby',
+                    'condition' => 'baik',
+                ];
+            }
+
+            if (!empty($assetUpdate)) {
+                $db = \Config\Database::connect();
+                $db->table('assets')
+                    ->where('id', (int) $wo['asset_id'])
+                    ->update($assetUpdate);
+            }
 
             $updatedWo = $this->model->getById($id);
             if ($updatedWo) { $this->notifyWoStatusChange($updatedWo, $oldStatus); }
