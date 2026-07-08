@@ -12,10 +12,12 @@ $ds = $dash_stats;
         <h1 class="text-xl font-bold text-gray-800">🛡️ Preventive Maintenance</h1>
         <p class="text-sm text-gray-500 mt-0.5">Schedule PM Recurring & Monitoring</p>
     </div>
+    <?php if (session()->get('role') !== 'technician'): ?>
     <a href="<?= base_url('admin/pm/new') ?>"
-       class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors shadow-sm">
+       class="inline-flex items-colors gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors shadow-sm">
         + Buat Schedule PM
     </a>
+    <?php endif; ?>
 </div>
 
 <!-- ══════════════════════════════════════════════════════════════
