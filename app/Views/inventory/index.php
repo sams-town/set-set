@@ -275,8 +275,10 @@
                         <div class="flex items-center justify-center gap-1">
                             <a href="<?= base_url('admin/inventory/' . $a['id']) ?>"
                                title="Detail" class="p-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs">👁</a>
+                            <?php if (session()->get('role') === 'admin'): ?>
                             <a href="<?= base_url('admin/inventory/' . $a['id'] . '/edit') ?>"
                                title="Edit" class="p-1.5 rounded-lg bg-yellow-50 hover:bg-yellow-100 text-yellow-600 text-xs">✏️</a>
+                            <?php endif; ?>
                             <?php if (session()->get('role') === 'admin'): ?>
                             <button type="button"
                                     onclick="confirmDelete('<?= base_url('admin/inventory/' . $a['id'] . '/delete') ?>', '<?= esc($a['name']) ?>')"

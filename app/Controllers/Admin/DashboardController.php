@@ -27,6 +27,9 @@ class DashboardController extends BaseController
     public function index()
     {
         $role = session()->get('role');
+        if ($role === 'user') {
+            return redirect()->to('/admin/inventory');
+        }
         if ($role === 'pembelian') {
             return redirect()->to('/admin/procurement');
         }

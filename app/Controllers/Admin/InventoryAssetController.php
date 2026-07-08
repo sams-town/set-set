@@ -237,6 +237,10 @@ class InventoryAssetController extends BaseController
     // ---------------------------------------------------------------
     public function edit(int $id)
     {
+        if (session()->get('role') !== 'admin') {
+            return redirect()->to('/admin/inventory/' . $id)->with('error', 'Hanya administrator yang dapat mengubah data aset.');
+        }
+
         $asset = $this->model->getById($id);
         if (! $asset) {
             return redirect()->to('/admin/inventory')->with('error', 'Aset tidak ditemukan.');
@@ -269,6 +273,10 @@ class InventoryAssetController extends BaseController
     // ---------------------------------------------------------------
     public function update(int $id)
     {
+        if (session()->get('role') !== 'admin') {
+            return redirect()->to('/admin/inventory/' . $id)->with('error', 'Hanya administrator yang dapat mengubah data aset.');
+        }
+
         $asset = $this->model->getById($id);
         if (! $asset) {
             return redirect()->to('/admin/inventory')->with('error', 'Aset tidak ditemukan.');

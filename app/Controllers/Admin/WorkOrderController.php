@@ -244,10 +244,12 @@ class WorkOrderController extends BaseController
             }
         }
 
+        $deptScope = $this->getDeptScope();
+
         return view('work_orders/form', [
             'title'         => 'Edit Work Order',
             'wo'            => $wo,
-            'assets'        => $this->model->getAssetsDropdown(),
+            'assets'        => $this->model->getAssetsDropdown($deptScope),
             'technicians'   => $this->model->getTechniciansDropdown(),
             'vendors'       => $this->model->getVendorsDropdown(),
             'departments'   => $this->model->getDepartmentsDropdown(),
