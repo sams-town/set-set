@@ -62,11 +62,11 @@ class DashboardController extends BaseController
 
         // ── Chart Data ─────────────────────────────────────────────
         $chartCondition = json_encode([
-            'labels' => ['Baik', 'Rusak Ringan', 'Rusak Berat'],
+            'labels' => ['Normal', 'Warning', 'Critical'],
             'data'   => [
-                $assetSummary['kondisi']['baik'],
-                $assetSummary['kondisi']['rusak_ringan'],
-                $assetSummary['kondisi']['rusak_berat'],
+                $assetSummary['normal'],
+                $assetSummary['warning'],
+                $assetSummary['critical'],
             ],
             'colors' => ['#22c55e', '#f59e0b', '#ef4444'],
         ]);

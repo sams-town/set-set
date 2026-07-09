@@ -188,16 +188,16 @@ foreach ($cards as $c):
      ================================================================ -->
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-5">
 
-    <!-- Donut: Kondisi Aset -->
+    <!-- Donut: Status Aset -->
     <div class="bg-white border rounded-xl p-4 shadow-sm">
-        <h2 class="text-sm font-bold text-gray-700 mb-3">Kondisi Aset</h2>
+        <h2 class="text-sm font-bold text-gray-700 mb-3">Status Aset</h2>
         <div class="flex items-center gap-4">
             <canvas id="chartCondition" style="max-width:110px;max-height:110px;"></canvas>
             <div class="space-y-2 text-sm flex-1">
                 <?php foreach ([
-                    ['Baik',         $asset_summary['kondisi']['baik'],         'bg-green-500'],
-                    ['Rusak Ringan', $asset_summary['kondisi']['rusak_ringan'],  'bg-yellow-400'],
-                    ['Rusak Berat',  $asset_summary['kondisi']['rusak_berat'],   'bg-red-500'],
+                    ['Normal',   $asset_summary['normal'],   'bg-green-500'],
+                    ['Warning',  $asset_summary['warning'],  'bg-yellow-400'],
+                    ['Critical', $asset_summary['critical'], 'bg-red-500'],
                 ] as [$lbl, $val, $clr]): ?>
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2">

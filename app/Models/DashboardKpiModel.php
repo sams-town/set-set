@@ -54,42 +54,55 @@ class DashboardKpiModel
             ->groupBy('status')
             ->get()->getResultArray();
 
+        // Status groups mapping
+        $normalList = ['Aktif', 'Standby', 'Terpasang', 'Siap Operasi', 'tersedia'];
+        $perhatianList = ['Jadwal PM', 'Kalibrasi', 'Menunggu Instalasi', 'Menunggu Sparepart', 'Pengadaan'];
+        $warningList = ['Rusak Ringan', 'Corrective Maintenance', 'Idle', 'Mutasi', 'dalam_perbaikan', 'diperbaiki'];
+        $criticalList = ['Rusak Berat', 'Tidak Beroperasi', 'Obsolete', 'Penghapusan', 'dihapus'];
+
         $out = [
             'total'           => 0,
+            'normal'          => 0,
+            'perhatian'       => 0,
+            'warning'         => 0,
+            'critical'        => 0,
             'tersedia'        => 0,
             'dipinjam'        => 0,
             'dalam_perbaikan' => 0,
             'dihapus'         => 0,
         ];
+
         foreach ($statusRows as $r) {
             $status = $r['status'];
             $n = (int) $r['n'];
 
-            if (in_array($status, ['Aktif', 'Standby', 'Terpasang', 'Siap Operasi', 'tersedia'])) {
-                $out['tersedia'] += $n;
-            } elseif (in_array($status, ['Jadwal PM', 'Kalibrasi', 'Menunggu Instalasi', 'Menunggu Sparepart', 'Pengadaan', 'Corrective Maintenance', 'Rusak Ringan', 'dalam_perbaikan', 'diperbaiki'])) {
-                $out['dalam_perbaikan'] += $n;
-            } elseif (in_array($status, ['Mutasi', 'dipinjam'])) {
-                $out['dipinjam'] += $n;
-            } elseif (in_array($status, ['Rusak Berat', 'Tidak Beroperasi', 'Obsolete', 'Penghapusan', 'dihapus'])) {
-                $out['dihapus'] += $n;
+            if (in_array($status, $normalList)) {
+                $out['normal'] += $n;
+            } elseif (in_array($status, $perhatianList)) {
+                $out['perhatian'] += $n;
+            } elseif (in_array($status, $warningList)) {
+                $out['warning'] += $n;
+            } elseif (in_array($status, $criticalList)) {
+                $out['critical'] += $n;
             }
+
+            // Real repair count (Corrective Maintenance / Menunggu Sparepart)
+            if (in_array($status, ['Corrective Maintenance', 'Menunggu Sparepart', 'dalam_perbaikan'])) {
+                $out['dalam_perbaikan'] += $n;
+            }
+
             $out['total'] += $n;
         }
 
-        // Kondisi
-        $condRows = $this->db->table('assets')
-            ->select('condition, COUNT(*) AS n')
-            ->where('deleted_at', null)
-            ->groupBy('condition')
-            ->get()->getResultArray();
+        $out['tersedia'] = $out['normal'];
+        $out['dipinjam'] = $out['warning'];
+        $out['dihapus'] = $out['critical'];
 
-        $out['kondisi'] = ['baik' => 0, 'rusak_ringan' => 0, 'rusak_berat' => 0];
-        foreach ($condRows as $r) {
-            if (isset($out['kondisi'][$r['condition']])) {
-                $out['kondisi'][$r['condition']] = (int) $r['n'];
-            }
-        }
+        $out['kondisi'] = [
+            'baik'         => $out['normal'] + $out['perhatian'],
+            'rusak_ringan' => $out['warning'],
+            'rusak_berat'  => $out['critical'],
+        ];
 
         // Indikator 12 — Garansi sudah/akan habis (expired today or earlier)
         $out['expired_warranty'] = (int) $this->db->table('assets')
