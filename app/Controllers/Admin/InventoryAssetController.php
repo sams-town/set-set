@@ -138,6 +138,7 @@ class InventoryAssetController extends BaseController
             'name'      => 'required|min_length[2]|max_length[150]',
             'category'  => 'required|max_length[50]',
             'condition' => 'required|in_list[baik,rusak_ringan,rusak_berat]',
+            'status'    => 'required|max_length[50]',
             'quantity'  => 'permit_empty|integer|greater_than[0]',
         ];
 
@@ -178,7 +179,7 @@ class InventoryAssetController extends BaseController
             'depreciation_years'  => $this->request->getPost('depreciation_years') ?: null,
             'pm_interval_days'    => $this->request->getPost('pm_interval_days')   ?: null,
             'condition'           => $this->request->getPost('condition'),
-            'status'              => 'Standby',
+            'status'              => $this->request->getPost('status') ?: 'Standby',
             'requires_calibration' => (int) $this->request->getPost('requires_calibration'),
             'last_calibration_date' => $this->request->getPost('last_calibration_date') ?: null,
             'next_calibration_date' => $this->request->getPost('next_calibration_date') ?: null,
