@@ -231,8 +231,20 @@
                     <!-- Umur Aset -->
                     <td class="px-3 py-2 text-xs text-gray-600">
                         <?= $age['label'] ?: '-' ?>
-                        <?php if ($a['pm_interval_days']): ?>
-                        <div class="text-gray-400">PM: <?= $a['pm_interval_days'] ?> hari</div>
+                        <?php if (!empty($a['next_pm_date'])): ?>
+                            <?php
+                            $nextPm = strtotime($a['next_pm_date']);
+                            $pmDays = (int) (($nextPm - time()) / 86400);
+                            if ($pmDays < 0):
+                                echo '<div class="text-red-500 font-bold mt-0.5">PM Overdue</div>';
+                            elseif ($pmDays === 0):
+                                echo '<div class="text-orange-500 font-bold mt-0.5">PM Hari Ini</div>';
+                            else:
+                                echo '<div class="text-gray-400 mt-0.5">PM: ' . date('d/m/y', $nextPm) . '</div>';
+                            endif;
+                            ?>
+                        <?php elseif ($a['pm_interval_days']): ?>
+                            <div class="text-gray-400 mt-0.5">PM: <?= $a['pm_interval_days'] ?> hari</div>
                         <?php endif; ?>
                         <?php if ($a['requires_calibration']): ?>
                         <div class="mt-0.5 font-medium text-teal-600">

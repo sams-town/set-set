@@ -45,7 +45,8 @@ class InventoryAssetModel
                  d.name  AS department_name,
                  l.name  AS location_name, l.building, l.floor,
                  v.name  AS vendor_name,
-                 u.name  AS created_by_name'
+                 u.name  AS created_by_name,
+                 (SELECT MIN(ps.next_due) FROM pm_schedules ps WHERE ps.asset_id = a.id AND ps.is_active = 1 AND ps.deleted_at IS NULL) AS next_pm_date'
             )
             ->join('departments d', 'd.id = a.department_id AND d.deleted_at IS NULL', 'left')
             ->join('locations l',   'l.id = a.location_id   AND l.deleted_at IS NULL', 'left')
@@ -69,7 +70,8 @@ class InventoryAssetModel
                  d.name  AS department_name,
                  l.name  AS location_name, l.building, l.floor,
                  v.name  AS vendor_name, v.phone AS vendor_phone, v.email AS vendor_email,
-                 u.name  AS created_by_name')
+                 u.name  AS created_by_name,
+                 (SELECT MIN(ps.next_due) FROM pm_schedules ps WHERE ps.asset_id = a.id AND ps.is_active = 1 AND ps.deleted_at IS NULL) AS next_pm_date')
             ->join('departments d', 'd.id = a.department_id', 'left')
             ->join('locations l',   'l.id = a.location_id',   'left')
             ->join('vendors v',     'v.id = a.vendor_id',     'left')

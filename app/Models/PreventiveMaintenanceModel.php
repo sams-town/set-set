@@ -112,7 +112,6 @@ class PreventiveMaintenanceModel
             ->join('users u',  'u.id = ps.assigned_to', 'left')
             ->where('ps.deleted_at', null)
             ->where('ps.is_active', 1)
-            ->where('ps.next_due >=', $dateFrom)
             ->where('ps.next_due <=', $dateTo)
             ->orderBy('ps.next_due', 'ASC')
             ->get()->getResultArray();
@@ -271,6 +270,16 @@ class PreventiveMaintenanceModel
 
         $this->db->table('pm_schedules')->insert($data);
         $id = $this->db->insertID();
+
+        if ($id && ($data['schedule_type'] ?? 'pm') === 'calibration') {
+            $this->db->table('assets')
+                ->where('id', $data['asset_id'])
+                ->update([
+                    'requires_calibration'  => 1,
+                    'next_calibration_date' => $data['next_due'],
+                ]);
+        }
+
         return $id > 0 ? (int) $id : false;
     }
 
@@ -280,14 +289,39 @@ class PreventiveMaintenanceModel
             $data['interval_days'] = self::RECURRING_DAYS[$data['recurring']] ?? 30;
         }
         $data['updated_at'] = date('Y-m-d H:i:s');
-        return $this->db->table('pm_schedules')->where('id', $id)->update($data);
+        $ok = $this->db->table('pm_schedules')->where('id', $id)->update($data);
+
+        if ($ok) {
+            $schedule = $this->getById($id);
+            if ($schedule && ($schedule['schedule_type'] ?? 'pm') === 'calibration') {
+                $this->db->table('assets')
+                    ->where('id', $schedule['asset_id'])
+                    ->update([
+                        'requires_calibration'  => 1,
+                        'next_calibration_date' => $schedule['next_due'],
+                    ]);
+            }
+        }
+
+        return $ok;
     }
 
     public function delete(int $id): bool
     {
-        return $this->db->table('pm_schedules')
+        $schedule = $this->getById($id);
+        $ok = $this->db->table('pm_schedules')
             ->where('id', $id)
             ->update(['deleted_at' => date('Y-m-d H:i:s'), 'is_active' => 0]);
+
+        if ($ok && $schedule && ($schedule['schedule_type'] ?? 'pm') === 'calibration') {
+            $this->db->table('assets')
+                ->where('id', $schedule['asset_id'])
+                ->update([
+                    'next_calibration_date' => null,
+                ]);
+        }
+
+        return $ok;
     }
 
     // ================================================================
