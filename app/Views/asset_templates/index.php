@@ -39,7 +39,7 @@
                     <td class="px-4 py-3 text-gray-400 text-xs"><?= $i + 1 ?></td>
                     <td class="px-4 py-3 font-semibold text-gray-800"><?= esc($t['name']) ?></td>
                     <td class="px-4 py-3">
-                        <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium <?= $t['category'] === 'Alat Medis' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600' ?>">
+                        <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium <?= category_badge_class($t['category']) ?>">
                             <?= esc($t['category']) ?>
                         </span>
                     </td>

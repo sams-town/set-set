@@ -40,8 +40,9 @@
             <select name="category" required
                     class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
                 <option value="">-- Pilih --</option>
-                <option value="Alat Medis" <?= old('category', $template['category'] ?? '') === 'Alat Medis' ? 'selected' : '' ?>>Alat Medis</option>
-                <option value="Alat Non Medis" <?= old('category', $template['category'] ?? '') === 'Alat Non Medis' ? 'selected' : '' ?>>Alat Non Medis</option>
+                <?php foreach (asset_categories() as $cat): ?>
+                    <option value="<?= esc($cat) ?>" <?= old('category', $template['category'] ?? '') === $cat ? 'selected' : '' ?>><?= esc($cat) ?></option>
+                <?php endforeach; ?>
             </select>
         </div>
 

@@ -14,8 +14,14 @@ class InventoryAssetController extends BaseController
     private const PER_PAGE = 15;
 
     private const CATEGORIES = [
-        'Alat Medis',
-        'Alat Non Medis',
+        'Building Assets',
+        'Utility Assets',
+        'Clinical Assets',
+        'Operational Assets',
+        'ICT Assets',
+        'Safety & Security Assets',
+        'Transportation Assets',
+        'Environmental Assets',
     ];
 
     // Satuan umum

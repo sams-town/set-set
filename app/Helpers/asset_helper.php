@@ -115,3 +115,43 @@ if (! function_exists('str_limit')) {
         return mb_strlen($str) > $limit ? mb_substr($str, 0, $limit) . $end : $str;
     }
 }
+
+// ---------------------------------------------------------------
+// List of asset categories
+// ---------------------------------------------------------------
+if (! function_exists('asset_categories')) {
+    function asset_categories(): array
+    {
+        return [
+            'Building Assets',
+            'Utility Assets',
+            'Clinical Assets',
+            'Operational Assets',
+            'ICT Assets',
+            'Safety & Security Assets',
+            'Transportation Assets',
+            'Environmental Assets',
+        ];
+    }
+}
+
+// ---------------------------------------------------------------
+// Badge classes for asset categories
+// ---------------------------------------------------------------
+if (! function_exists('category_badge_class')) {
+    function category_badge_class(string $category): string
+    {
+        $map = [
+            'Building Assets'          => 'bg-indigo-100 text-indigo-700',
+            'Utility Assets'           => 'bg-amber-100 text-amber-700',
+            'Clinical Assets'          => 'bg-teal-100 text-teal-700',
+            'Operational Assets'       => 'bg-purple-100 text-purple-700',
+            'ICT Assets'               => 'bg-blue-100 text-blue-700',
+            'Safety & Security Assets' => 'bg-red-100 text-red-700',
+            'Transportation Assets'    => 'bg-rose-100 text-rose-700',
+            'Environmental Assets'     => 'bg-emerald-100 text-emerald-700',
+        ];
+
+        return $map[$category] ?? 'bg-gray-100 text-gray-600';
+    }
+}

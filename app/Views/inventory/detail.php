@@ -94,7 +94,11 @@ $scLabel = ['baru' => '🆕 Baru', '2nd' => '🔄 2nd', 'bekas' => '📦 Bekas']
                     <dl class="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
                         <div>
                             <dt class="text-xs text-gray-400">Kategori</dt>
-                            <dd class="font-semibold text-gray-800"><?= esc($asset['category'] ?? '-') ?></dd>
+                            <dd class="mt-0.5">
+                                <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-semibold <?= category_badge_class($asset['category'] ?? '') ?>">
+                                    <?= esc($asset['category'] ?? '-') ?>
+                                </span>
+                            </dd>
                         </div>
                         <div>
                             <dt class="text-xs text-gray-400">Type / Tipe</dt>

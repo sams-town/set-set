@@ -196,7 +196,11 @@
 
                     <!-- Kategori / Type -->
                     <td class="px-3 py-2 text-xs">
-                        <div class="text-gray-700 font-medium"><?= esc($a['category']) ?></div>
+                        <div class="mb-1">
+                            <span class="inline-flex px-1.5 py-0.5 rounded-full text-[10px] font-semibold <?= category_badge_class($a['category']) ?>">
+                                <?= esc($a['category']) ?>
+                            </span>
+                        </div>
                         <?php if (!empty($a['type'])): ?>
                         <div class="text-gray-400"><?= esc($a['type']) ?></div>
                         <?php endif; ?>

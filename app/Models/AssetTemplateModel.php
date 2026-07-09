@@ -26,7 +26,7 @@ class AssetTemplateModel extends Model
 
     protected $validationRules = [
         'name'     => 'required|min_length[2]|max_length[150]|is_unique[asset_templates.name,id,{id}]',
-        'category' => 'required|in_list[Alat Medis,Alat Non Medis]',
+        'category' => 'required|in_list[Building Assets,Utility Assets,Clinical Assets,Operational Assets,ICT Assets,Safety & Security Assets,Transportation Assets,Environmental Assets]',
     ];
 
     protected $validationMessages = [
@@ -36,7 +36,7 @@ class AssetTemplateModel extends Model
         ],
         'category' => [
             'required' => 'Kategori wajib dipilih.',
-            'in_list'  => 'Kategori tidak valid (harus Alat Medis atau Alat Non Medis).',
+            'in_list'  => 'Kategori tidak valid.',
         ],
     ];
 
