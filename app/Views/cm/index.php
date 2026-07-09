@@ -27,12 +27,6 @@ $priorityColor = [
         <h1 class="text-xl font-bold text-gray-800">🔧 Corrective Maintenance</h1>
         <p class="text-sm text-gray-500 mt-0.5">Histori kerusakan & analisis basis pengambilan keputusan</p>
     </div>
-    <?php if (session()->get('role') !== 'technician'): ?>
-    <a href="<?= base_url('admin/work-orders/new?type=corrective') ?>"
-       class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium px-4 py-2 rounded-lg shadow-sm">
-        + Buat WO Corrective
-    </a>
-    <?php endif; ?>
 </div>
 
 <!-- ════════════════════════════════════════════════════════════════

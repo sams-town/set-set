@@ -33,7 +33,7 @@
 <?php if ($type === 'assets'): ?>
 <table class="table table-bordered table-sm">
     <thead class="table-dark">
-        <tr><th>#</th><th>Kode Aset</th><th>Nama Aset</th><th>Kategori</th><th>Lokasi</th><th>Kondisi</th><th>Status</th><th>Harga Beli</th></tr>
+        <tr><th>#</th><th>Kode Aset</th><th>Nama Aset</th><th>Kategori</th><th>Lokasi</th><th>Status</th><th>Harga Beli</th></tr>
     </thead>
     <tbody>
         <?php foreach ($records as $i => $r): ?>
@@ -43,13 +43,12 @@
             <td><?= esc($r['name']) ?></td>
             <td><?= esc($r['category']) ?></td>
             <td><?= esc($r['location_name'] ?? '-') ?></td>
-            <td><?= esc($r['condition']) ?></td>
             <td><?= esc($r['status']) ?></td>
             <td><?= $r['purchase_price'] ? 'Rp ' . number_format($r['purchase_price'], 0, ',', '.') : '-' ?></td>
         </tr>
         <?php endforeach; ?>
     </tbody>
-    <tfoot><tr><td colspan="8" class="text-end fw-semibold">Total: <?= count($records) ?> aset</td></tr></tfoot>
+    <tfoot><tr><td colspan="7" class="text-end fw-semibold">Total: <?= count($records) ?> aset</td></tr></tfoot>
 </table>
 
 <?php elseif ($type === 'borrows'): ?>

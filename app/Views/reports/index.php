@@ -102,14 +102,13 @@
                     <th class="px-4 py-3 text-left">Nama Aset</th>
                     <th class="px-4 py-3 text-left">Kategori</th>
                     <th class="px-4 py-3 text-left">Departemen</th>
-                    <th class="px-4 py-3 text-left">Kondisi</th>
                     <th class="px-4 py-3 text-center">Status</th>
                     <th class="px-4 py-3 text-right">Harga Beli</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
                 <?php if (empty($records)): ?>
-                <tr><td colspan="7" class="text-center text-gray-400 py-10">Tidak ada data.</td></tr>
+                <tr><td colspan="6" class="text-center text-gray-400 py-10">Tidak ada data.</td></tr>
                 <?php else: ?>
                 <?php
                 $condColor = ['baik' => 'bg-green-100 text-green-700', 'rusak_ringan' => 'bg-yellow-100 text-yellow-700', 'rusak_berat' => 'bg-red-100 text-red-700'];
@@ -121,11 +120,6 @@
                     <td class="px-4 py-2.5 font-medium text-gray-800"><?= esc($r['name']) ?></td>
                     <td class="px-4 py-2.5 text-xs text-gray-600"><?= esc($r['category'] ?? '-') ?></td>
                     <td class="px-4 py-2.5 text-xs text-gray-600"><?= esc($r['department_name'] ?? '-') ?></td>
-                    <td class="px-4 py-2.5">
-                        <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium <?= $condColor[$r['condition']] ?? 'bg-gray-100 text-gray-600' ?>">
-                            <?= ucwords(str_replace('_',' ',$r['condition'])) ?>
-                        </span>
-                    </td>
                     <td class="px-4 py-2.5 text-center">
                         <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium <?= $stColor[$r['status']] ?? 'bg-gray-100 text-gray-600' ?>">
                             <?= ucwords(str_replace('_',' ',$r['status'])) ?>

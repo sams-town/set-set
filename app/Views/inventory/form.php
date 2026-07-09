@@ -133,20 +133,8 @@
                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-blue-400 focus:outline-none">
                 </div>
 
-                <!-- Kondisi -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        Kondisi <span class="text-red-500">*</span>
-                    </label>
-                    <select name="condition" required
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
-                        <?php foreach (['baik' => 'Baik', 'rusak_ringan' => 'Rusak Ringan', 'rusak_berat' => 'Rusak Berat'] as $v => $l): ?>
-                            <option value="<?= $v ?>" <?= old('condition', $asset['condition'] ?? 'baik') === $v ? 'selected' : '' ?>>
-                                <?= $l ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
+                <!-- Kondisi (hidden default to baik) -->
+                <input type="hidden" name="condition" value="<?= esc(old('condition', $asset['condition'] ?? 'baik')) ?>">
 
                 <!-- Status (edit only) -->
                 <?php if ($isEdit): ?>
