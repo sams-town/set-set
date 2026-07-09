@@ -63,16 +63,9 @@
             </optgroup>
         </select>
 
-        <select name="condition" class="min-w-[130px] border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
-            <option value="">Semua Kondisi</option>
-            <?php foreach (['baik' => 'Baik', 'rusak_ringan' => 'Rusak Ringan', 'rusak_berat' => 'Rusak Berat'] as $v => $l): ?>
-                <option value="<?= $v ?>" <?= ($filters['condition'] ?? '') === $v ? 'selected' : '' ?>><?= $l ?></option>
-            <?php endforeach; ?>
-        </select>
-
         <select name="status_condition" class="min-w-[110px] border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
             <option value="">Baru/2nd</option>
-            <?php foreach (['baru' => 'Baru', '2nd' => '2nd', 'bekas' => 'Bekas'] as $v => $l): ?>
+            <?php foreach (['baru' => 'Baru', '2nd' => '2nd'] as $v => $l): ?>
                 <option value="<?= $v ?>" <?= ($filters['status_condition'] ?? '') === $v ? 'selected' : '' ?>><?= $l ?></option>
             <?php endforeach; ?>
         </select>
@@ -119,7 +112,6 @@
                     <th class="px-3 py-3 text-center">Qty</th>
                     <th class="px-3 py-3">Harga / Depresiasi</th>
                     <th class="px-3 py-3">Umur Aset</th>
-                    <th class="px-3 py-3">Kondisi</th>
                     <th class="px-3 py-3">Status</th>
                     <th class="px-3 py-3">Garansi</th>
                     <th class="px-3 py-3 text-center">Aksi</th>
@@ -128,7 +120,7 @@
             <tbody class="divide-y divide-gray-100">
                 <?php if (empty($assets)): ?>
                 <tr>
-                    <td colspan="12" class="text-center text-gray-400 py-12">
+                    <td colspan="11" class="text-center text-gray-400 py-12">
                         <div class="text-3xl mb-2">📭</div>
                         Tidak ada data aset.
                     </td>
@@ -257,12 +249,7 @@
                         <?php endif; ?>
                     </td>
 
-                    <!-- Kondisi -->
-                    <td class="px-3 py-2">
-                        <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium <?= $condMap[$a['condition']] ?? 'bg-gray-100 text-gray-600' ?>">
-                            <?= $condLabel[$a['condition']] ?? $a['condition'] ?>
-                        </span>
-                    </td>
+
 
                     <!-- Status -->
                     <td class="px-3 py-2">

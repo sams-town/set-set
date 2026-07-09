@@ -19,7 +19,7 @@ $getStatusBadgeClass = function($status) {
 
 $condMap = ['baik' => 'bg-green-100 text-green-700', 'rusak_ringan' => 'bg-yellow-100 text-yellow-700', 'rusak_berat' => 'bg-red-100 text-red-700'];
 $condLabel = ['baik' => 'Baik', 'rusak_ringan' => 'Rusak Ringan', 'rusak_berat' => 'Rusak Berat'];
-$scLabel = ['baru' => '🆕 Baru', '2nd' => '🔄 2nd', 'bekas' => '📦 Bekas'];
+$scLabel = ['baru' => '🆕 Baru', '2nd' => '🔄 2nd'];
 ?>
 
 <!-- Breadcrumb -->

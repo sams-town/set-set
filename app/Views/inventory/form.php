@@ -271,7 +271,7 @@
                     <label class="block text-sm font-medium text-gray-700 mb-1">Status Kondisi</label>
                     <select name="status_condition"
                             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
-                        <?php foreach (['baru' => 'Baru', '2nd' => '2nd / Bekas Pakai', 'bekas' => 'Bekas'] as $v => $l): ?>
+                        <?php foreach (['baru' => 'Baru', '2nd' => '2nd'] as $v => $l): ?>
                             <option value="<?= $v ?>" <?= old('status_condition', $asset['status_condition'] ?? 'baru') === $v ? 'selected' : '' ?>>
                                 <?= $l ?>
                             </option>
