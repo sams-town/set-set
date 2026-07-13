@@ -226,7 +226,7 @@ class ProcurementRequestModel
             ->select('request_code')->like('request_code', $prefix, 'after')
             ->orderBy('request_code', 'DESC')->limit(1)->get()->getRowArray();
         $seq = 1;
-        if ($last) { $seq = (int) end(explode('-', $last['request_code'])) + 1; }
+        if ($last) { $parts = explode('-', $last['request_code']); $seq = (int) end($parts) + 1; }
         return $prefix . str_pad($seq, 3, '0', STR_PAD_LEFT);
     }
 

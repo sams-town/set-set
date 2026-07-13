@@ -185,12 +185,13 @@ class PreventiveMaintenanceController extends BaseController
         }
 
         return view('pm/form', [
-            'title'          => 'Edit Schedule PM',
-            'schedule'       => $schedule,
-            'assets'         => $this->model->getAssetsDropdown(),
-            'technicians'    => $this->model->getTechniciansDropdown(),
-            'recurring_opts' => PreventiveMaintenanceModel::RECURRING_LABELS,
-            'priority_opts'  => ['rendah', 'sedang', 'tinggi', 'kritis'],
+            'title'                => 'Edit Schedule PM',
+            'schedule'             => $schedule,
+            'assets'               => $this->model->getAssetsDropdown(),
+            'technicians'          => $this->model->getTechniciansDropdown(),
+            'recurring_opts'       => PreventiveMaintenanceModel::RECURRING_LABELS,
+            'priority_opts'        => ['rendah', 'sedang', 'tinggi', 'kritis'],
+            'preselected_asset_id' => null,
         ]);
     }
 

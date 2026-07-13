@@ -231,8 +231,8 @@ class InventoryAssetController extends BaseController
         );
 
         // Dapatkan jadwal PM untuk aset ini
-        $pmModel = new \App\Models\PreventiveMaintenanceModel();
-        $pmSchedules = $this->db->table('pm_schedules ps')
+        $db = \Config\Database::connect();
+        $pmSchedules = $db->table('pm_schedules ps')
             ->select('ps.*, u.name AS assigned_to_name')
             ->join('users u', 'u.id = ps.assigned_to', 'left')
             ->where('ps.asset_id', $id)
