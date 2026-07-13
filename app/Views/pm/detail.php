@@ -51,10 +51,10 @@ $priorityColor  = \App\Models\PreventiveMaintenanceModel::PRIORITY_COLORS;
 </div>
 
 <!-- Due Status Card -->
-<div class="bg-white border rounded-xl p-4 mb-5 shadow-sm <?= $due_status['bg'] ?>">
+<div class="bg-white border rounded-xl p-4 mb-5 shadow-sm <?= $due_status['badge'] ?>">
     <div class="flex items-center justify-between">
         <div>
-            <p class="text-sm font-semibold <?= $due_status['color'] ?> mb-1">
+            <p class="text-sm font-semibold <?= $due_status['badge'] ?> mb-1">
                 <?= $due_status['icon'] ?> <?= $due_status['label'] ?>
             </p>
             <p class="text-xs text-gray-500">Next Due: <strong><?= date('d M Y', strtotime($schedule['next_due'])) ?></strong></p>
