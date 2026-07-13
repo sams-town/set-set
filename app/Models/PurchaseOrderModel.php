@@ -133,7 +133,7 @@ class PurchaseOrderModel
             ->select('po_code')->like('po_code', $prefix, 'after')
             ->orderBy('po_code', 'DESC')->limit(1)->get()->getRowArray();
         $seq = 1;
-        if ($last) { $seq = (int) end(explode('-', $last['po_code'])) + 1; }
+        if ($last) { $parts = explode('-', $last['po_code']); $seq = (int) end($parts) + 1; }
         return $prefix . str_pad($seq, 3, '0', STR_PAD_LEFT);
     }
 }

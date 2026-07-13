@@ -2,7 +2,7 @@
 <?= $this->section('content') ?>
 <?php
 $isEdit = !empty($schedule);
-$v = function($key, $default = '') use ($schedule, $preselected_asset_id) {
+$v = function($key, $default = '') use ($schedule, $preselected_asset_id, $isEdit) {
     if ($key === 'asset_id' && !$isEdit) {
         return old($key, $schedule[$key] ?? $preselected_asset_id ?? $default);
     }
