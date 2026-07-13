@@ -2,7 +2,12 @@
 <?= $this->section('content') ?>
 <?php
 $isEdit = !empty($schedule);
-$v = fn($key, $default = '') => old($key, $schedule[$key] ?? $default);
+$v = function($key, $default = '') use ($schedule, $preselected_asset_id) {
+    if ($key === 'asset_id' && !$isEdit) {
+        return old($key, $schedule[$key] ?? $preselected_asset_id ?? $default);
+    }
+    return old($key, $schedule[$key] ?? $default);
+};
 $recurringDays = \App\Models\PreventiveMaintenanceModel::RECURRING_DAYS;
 ?>
 

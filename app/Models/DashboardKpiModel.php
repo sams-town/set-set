@@ -40,21 +40,28 @@ class DashboardKpiModel
     // ================================================================
 
     /**
-     * Ringkasan lengkap aset — satu GROUP BY status + satu GROUP BY condition
+     * Ringkasan lengkap aset — satu GROUP BY condition + satu GROUP BY status
      * Return keys: total, tersedia, dipinjam, dalam_perbaikan, dihapus,
      *              kondisi[baik|rusak_ringan|rusak_berat],
      *              expired_warranty
      */
     public function assetSummary(): array
     {
-        // Status
+        // Dapatkan jumlah aset per condition (kondisi)
+        $conditionRows = $this->db->table('assets')
+            ->select('condition, COUNT(*) AS n')
+            ->where('deleted_at', null)
+            ->groupBy('condition')
+            ->get()->getResultArray();
+
+        // Dapatkan jumlah aset per status
         $statusRows = $this->db->table('assets')
             ->select('status, COUNT(*) AS n')
             ->where('deleted_at', null)
             ->groupBy('status')
             ->get()->getResultArray();
 
-        // Status groups mapping
+        // Status groups untuk chart (Normal, Perhatian, Warning, Critical)
         $normalList = ['Aktif', 'Standby', 'Terpasang', 'Siap Operasi', 'tersedia'];
         $perhatianList = ['Jadwal PM', 'Kalibrasi', 'Menunggu Instalasi', 'Menunggu Sparepart', 'Pengadaan'];
         $warningList = ['Rusak Ringan', 'Corrective Maintenance', 'Idle', 'Mutasi', 'dalam_perbaikan', 'diperbaiki'];
@@ -72,6 +79,7 @@ class DashboardKpiModel
             'dihapus'         => 0,
         ];
 
+        // Hitung untuk chart (berdasarkan status)
         foreach ($statusRows as $r) {
             $status = $r['status'];
             $n = (int) $r['n'];
@@ -86,7 +94,7 @@ class DashboardKpiModel
                 $out['critical'] += $n;
             }
 
-            // Real repair count (Corrective Maintenance / Menunggu Sparepart)
+            // Hitung "dalam_perbaikan" (Corrective Maintenance / Menunggu Sparepart)
             if (in_array($status, ['Corrective Maintenance', 'Menunggu Sparepart', 'dalam_perbaikan'])) {
                 $out['dalam_perbaikan'] += $n;
             }
@@ -98,11 +106,20 @@ class DashboardKpiModel
         $out['dipinjam'] = $out['warning'];
         $out['dihapus'] = $out['critical'];
 
-        $out['kondisi'] = [
-            'baik'         => $out['normal'] + $out['perhatian'],
-            'rusak_ringan' => $out['warning'],
-            'rusak_berat'  => $out['critical'],
+        // Hitung kondisi (berdasarkan kolom condition)
+        $kondisi = [
+            'baik'         => 0,
+            'rusak_ringan' => 0,
+            'rusak_berat'  => 0,
         ];
+        foreach ($conditionRows as $r) {
+            $cond = $r['condition'];
+            $n = (int) $r['n'];
+            if (isset($kondisi[$cond])) {
+                $kondisi[$cond] = $n;
+            }
+        }
+        $out['kondisi'] = $kondisi;
 
         // Indikator 12 — Garansi sudah/akan habis (expired today or earlier)
         $out['expired_warranty'] = (int) $this->db->table('assets')

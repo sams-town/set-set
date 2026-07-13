@@ -230,12 +230,23 @@ class InventoryAssetController extends BaseController
             $asset['purchase_date'] ?? null
         );
 
+        // Dapatkan jadwal PM untuk aset ini
+        $pmModel = new \App\Models\PreventiveMaintenanceModel();
+        $pmSchedules = $this->db->table('pm_schedules ps')
+            ->select('ps.*, u.name AS assigned_to_name')
+            ->join('users u', 'u.id = ps.assigned_to', 'left')
+            ->where('ps.asset_id', $id)
+            ->where('ps.deleted_at', null)
+            ->orderBy('ps.next_due', 'ASC')
+            ->get()->getResultArray();
+
         return view('inventory/detail', [
-            'title'      => 'Detail Aset — ' . $asset['name'],
-            'asset'      => $asset,
-            'logs'       => $this->logModel->getByAsset($id),
-            'age'        => $age,
-            'book_value' => $bookValue,
+            'title'        => 'Detail Aset — ' . $asset['name'],
+            'asset'        => $asset,
+            'logs'         => $this->logModel->getByAsset($id),
+            'age'          => $age,
+            'book_value'   => $bookValue,
+            'pm_schedules' => $pmSchedules,
         ]);
     }
 

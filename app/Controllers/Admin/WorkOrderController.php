@@ -120,11 +120,13 @@ class WorkOrderController extends BaseController
 
         // Scope aset untuk non-admin: hanya tampilkan aset dari dept sendiri
         $assetsDropdown = $this->model->getAssetsDropdown($deptScope);
+        $assetsSimple = $this->model->getAssetsDropdownSimple($deptScope);
 
         return view('work_orders/form', [
             'title'         => 'Buat Work Order',
             'wo'            => null,
-            'assets'        => $assetsDropdown,
+            'assets'        => $assetsSimple,
+            'assets_data'   => $assetsDropdown,
             'technicians'   => $this->model->getTechniciansDropdown(),
             'vendors'       => $this->model->getVendorsDropdown(),
             'departments'   => $this->model->getDepartmentsDropdown(),
@@ -259,10 +261,14 @@ class WorkOrderController extends BaseController
 
         $deptScope = $this->getDeptScope();
 
+        $assetsDropdown = $this->model->getAssetsDropdown($deptScope);
+        $assetsSimple = $this->model->getAssetsDropdownSimple($deptScope);
+
         return view('work_orders/form', [
             'title'         => 'Edit Work Order',
             'wo'            => $wo,
-            'assets'        => $this->model->getAssetsDropdown($deptScope),
+            'assets'        => $assetsSimple,
+            'assets_data'   => $assetsDropdown,
             'technicians'   => $this->model->getTechniciansDropdown(),
             'vendors'       => $this->model->getVendorsDropdown(),
             'departments'   => $this->model->getDepartmentsDropdown(),

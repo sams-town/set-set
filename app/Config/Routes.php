@@ -159,6 +159,14 @@ $routes->group('admin', ['filter' => 'auth'], function ($routes) {
         $routes->post('(:num)/delete',           'Admin\PreventiveMaintenanceController::delete/$1', ['filter' => 'role:admin']);
         $routes->post('(:num)/mark-done',        'Admin\PreventiveMaintenanceController::markAsDone/$1');
     });
+    
+    // ── Maintenance Checklist (Admin & Technician Only) ─────────
+    $routes->group('checklist', ['filter' => 'role:admin,technician'], function ($routes) {
+        $routes->get('new/(:segment)',          'Admin\MaintenanceChecklistController::new/$1');
+        $routes->get('(:num)/edit',             'Admin\MaintenanceChecklistController::edit/$1');
+        $routes->post('(:num)',                 'Admin\MaintenanceChecklistController::update/$1');
+        $routes->get('(:num)',                  'Admin\MaintenanceChecklistController::show/$1');
+    });
 
     // ── Settings (Admin only) ───────────────────────────────────
     $routes->group('settings', ['filter' => 'role:admin'], function ($routes) {

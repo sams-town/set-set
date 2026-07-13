@@ -254,22 +254,33 @@ class InventoryAssetModel
 
     public function getStats(?int $deptId = null): array
     {
-        $builder = $this->db->table('assets')
+        // Status untuk chart
+        $statusBuilder = $this->db->table('assets')
             ->select('status, COUNT(*) AS total')
             ->where('deleted_at', null);
 
+        // Condition untuk kondisi aset
+        $conditionBuilder = $this->db->table('assets')
+            ->select('condition, COUNT(*) AS total')
+            ->where('deleted_at', null);
+
         if ($deptId !== null) {
-            $builder->where('department_id', $deptId);
+            $statusBuilder->where('department_id', $deptId);
+            $conditionBuilder->where('department_id', $deptId);
         }
 
-        $rows = $builder->groupBy('status')->get()->getResultArray();
+        $statusRows = $statusBuilder->groupBy('status')->get()->getResultArray();
+        $conditionRows = $conditionBuilder->groupBy('condition')->get()->getResultArray();
 
         $stats = [
-            'total'     => 0,
-            'normal'    => 0,
-            'perhatian' => 0,
-            'warning'   => 0,
-            'critical'  => 0,
+            'total'        => 0,
+            'normal'       => 0,
+            'perhatian'    => 0,
+            'warning'      => 0,
+            'critical'     => 0,
+            'kondisi_baik' => 0,
+            'kondisi_rusak_ringan' => 0,
+            'kondisi_rusak_berat'  => 0,
         ];
 
         $normalList = ['Aktif', 'Standby', 'Terpasang', 'Siap Operasi', 'tersedia'];
@@ -277,7 +288,7 @@ class InventoryAssetModel
         $warningList = ['Rusak Ringan', 'Corrective Maintenance', 'Idle', 'Mutasi', 'dalam_perbaikan', 'diperbaiki'];
         $criticalList = ['Rusak Berat', 'Tidak Beroperasi', 'Obsolete', 'Penghapusan', 'dihapus'];
 
-        foreach ($rows as $row) {
+        foreach ($statusRows as $row) {
             $st  = $row['status'];
             $qty = (int) $row['total'];
 
@@ -291,6 +302,19 @@ class InventoryAssetModel
                 $stats['critical'] += $qty;
             }
             $stats['total'] += $qty;
+        }
+
+        // Hitung kondisi aset
+        foreach ($conditionRows as $row) {
+            $cond = $row['condition'];
+            $qty = (int) $row['total'];
+            if ($cond === 'baik') {
+                $stats['kondisi_baik'] = $qty;
+            } elseif ($cond === 'rusak_ringan') {
+                $stats['kondisi_rusak_ringan'] = $qty;
+            } elseif ($cond === 'rusak_berat') {
+                $stats['kondisi_rusak_berat'] = $qty;
+            }
         }
 
         $warBuilder = $this->db->table('assets')

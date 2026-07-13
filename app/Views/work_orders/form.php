@@ -429,7 +429,31 @@ $v      = fn($key, $default = '') => old($key, $wo[$key] ?? $default);
 </form>
 </div><!-- end max-w-5xl -->
 
+
 <script>
+// Data aset beserta kategorinya
+const assetsData = <?= json_encode($assets_data ?? []) ?>;
+
+// Auto-update WO category saat aset berubah
+function updateCategory() {
+    const assetSelect = document.querySelector('select[name="asset_id"]');
+    const categorySelect = document.querySelector('select[name="category_wo"]');
+    
+    if (assetSelect && categorySelect && assetsData) {
+        const selectedId = assetSelect.value;
+        if (selectedId && assetsData[selectedId]) {
+            const assetCategory = assetsData[selectedId].category;
+            // Cari option dengan value yang sesuai
+            for (let opt of categorySelect.options) {
+                if (opt.value === assetCategory) {
+                    categorySelect.value = assetCategory;
+                    break;
+                }
+            }
+        }
+    }
+}
+
 // Auto-update SLA hours saat prioritas berubah
 function updateSla() {
     const sel = document.getElementById('prioritySelect');
@@ -459,9 +483,18 @@ function calcTotalCost() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Inisialisasi event listener untuk aset
+    const assetSelect = document.querySelector('select[name="asset_id"]');
+    if (assetSelect) {
+        assetSelect.addEventListener('change', updateCategory);
+        // Trigger awal untuk set category saat halaman dimuat
+        updateCategory();
+    }
+    
     const td = document.getElementById('targetDate');
     if (td && !td.value) { updateSla(); }
 });
 </script>
+
 
 <?= $this->endSection() ?>

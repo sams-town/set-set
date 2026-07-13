@@ -94,13 +94,15 @@ class PreventiveMaintenanceController extends BaseController
     // ================================================================
     public function create()
     {
+        $assetId = $this->request->getGet('asset_id');
         return view('pm/form', [
-            'title'          => 'Buat Schedule PM',
-            'schedule'       => null,
-            'assets'         => $this->model->getAssetsDropdown(),
-            'technicians'    => $this->model->getTechniciansDropdown(),
-            'recurring_opts' => PreventiveMaintenanceModel::RECURRING_LABELS,
-            'priority_opts'  => ['rendah', 'sedang', 'tinggi', 'kritis'],
+            'title'                    => 'Buat Schedule PM',
+            'schedule'                 => null,
+            'assets'                   => $this->model->getAssetsDropdown(),
+            'technicians'              => $this->model->getTechniciansDropdown(),
+            'recurring_opts'           => PreventiveMaintenanceModel::RECURRING_LABELS,
+            'priority_opts'            => ['rendah', 'sedang', 'tinggi', 'kritis'],
+            'preselected_asset_id'     => $assetId,
         ]);
     }
 

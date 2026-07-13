@@ -220,13 +220,20 @@ $scLabel = ['baru' => '🆕 Baru', '2nd' => '🔄 2nd'];
             </div>
         </div>
 
-        <!-- SECTION 3: Pemeliharaan Preventif -->
-        <?php if ($asset['pm_interval_days']): ?>
+        <!-- SECTION 3: Pemeliharaan Preventif & Jadwal PM -->
         <div class="bg-white border rounded-xl p-5 shadow-sm">
-            <h2 class="text-sm font-bold text-gray-700 mb-4 pb-2 border-b flex items-center gap-2">
-                <span class="text-orange-600">🔧</span> Pemeliharaan Preventif
+            <h2 class="text-sm font-bold text-gray-700 mb-4 pb-2 border-b flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                    <span class="text-orange-600">🔧</span> Pemeliharaan Preventif
+                </div>
+                <a href="<?= base_url('admin/pm/new?asset_id=' . $asset['id']) ?>"
+                   class="inline-flex items-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-colors">
+                    + Jadwal PM Baru
+                </a>
             </h2>
-            <div class="flex items-center gap-4">
+
+            <?php if ($asset['pm_interval_days']): ?>
+            <div class="flex items-center gap-4 mb-4">
                 <div class="bg-orange-50 border border-orange-200 rounded-xl p-4 text-center">
                     <div class="text-3xl font-bold text-orange-600"><?= $asset['pm_interval_days'] ?></div>
                     <div class="text-xs text-gray-500 mt-1">Hari Interval</div>
@@ -248,8 +255,70 @@ $scLabel = ['baru' => '🆕 Baru', '2nd' => '🔄 2nd'];
                     </a>
                 </div>
             </div>
+            <?php endif; ?>
+
+            <!-- Jadwal PM -->
+            <?php if (!empty($pm_schedules)): ?>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="text-xs text-gray-500 border-b">
+                            <th class="text-left py-2 font-medium">Judul</th>
+                            <th class="text-left py-2 font-medium">Tipe</th>
+                            <th class="text-left py-2 font-medium">Berikutnya</th>
+                            <th class="text-left py-2 font-medium">Teknisi</th>
+                            <th class="text-left py-2 font-medium">Status</th>
+                            <th class="text-right py-2 font-medium">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y">
+                        <?php foreach ($pm_schedules as $pm): ?>
+                        <?php
+                        $dueStatus = \App\Models\PreventiveMaintenanceModel::getDueStatus($pm['next_due'] ?? date('Y-m-d'));
+                        $typeLabel = $pm['schedule_type'] === 'calibration' ? 'Kalibrasi' : 'PM';
+                        $typeBadge = $pm['schedule_type'] === 'calibration' ? 'bg-teal-100 text-teal-700' : 'bg-orange-100 text-orange-700';
+                        ?>
+                        <tr>
+                            <td class="py-2">
+                                <a href="<?= base_url('admin/pm/' . $pm['id']) ?>" class="font-medium text-gray-800 hover:text-blue-600">
+                                    <?= esc($pm['title']) ?>
+                                </a>
+                            </td>
+                            <td class="py-2">
+                                <span class="px-2 py-0.5 rounded-full text-xs font-semibold <?= $typeBadge ?>">
+                                    <?= $typeLabel ?>
+                                </span>
+                            </td>
+                            <td class="py-2">
+                                <div class="font-medium text-gray-800">
+                                    <?= $pm['next_due'] ? date('d M Y', strtotime($pm['next_due'])) : '-' ?>
+                                </div>
+                                <div class="text-xs text-gray-400">
+                                    <?= $dueStatus['label'] ?>
+                                </div>
+                            </td>
+                            <td class="py-2 text-gray-600">
+                                <?= esc($pm['assigned_to_name'] ?? '-') ?>
+                            </td>
+                            <td class="py-2">
+                                <span class="px-2 py-0.5 rounded-full text-xs font-semibold <?= $pm['is_active'] ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600' ?>">
+                                    <?= $pm['is_active'] ? 'Aktif' : 'Non-aktif' ?>
+                                </span>
+                            </td>
+                            <td class="py-2 text-right">
+                                <a href="<?= base_url('admin/pm/' . $pm['id']) ?>" class="text-xs text-blue-600 hover:underline">Lihat</a>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+            <?php else: ?>
+            <div class="text-center py-8 text-gray-400 text-sm">
+                Belum ada jadwal PM untuk aset ini.
+            </div>
+            <?php endif; ?>
         </div>
-        <?php endif; ?>
 
         <!-- SECTION 3.5: Detail Kalibrasi Alat Medis -->
         <?php if (!empty($asset['requires_calibration']) && $asset['requires_calibration'] == 1): ?>

@@ -37,13 +37,16 @@ class WorkOrderModel
         'Lainnya',
     ];
 
-    // Kategori WO
+    // Kategori WO (sesuai kategori inventory)
     public const CATEGORIES_WO = [
-        'Mekanikal',
-        'Elektrikal',
-        'Plumbing',
-        'Sipil',
-        'IT',
+        'Building Assets',
+        'Utility Assets',
+        'Clinical Assets',
+        'Operational Assets',
+        'ICT Assets',
+        'Safety & Security Assets',
+        'Transportation Assets',
+        'Environmental Assets',
     ];
 
     public function __construct()
@@ -320,6 +323,31 @@ class WorkOrderModel
     }
 
     public function getAssetsDropdown(?int $deptId = null): array
+    {
+        $builder = $this->db->table('assets a')
+            ->select('a.id, a.asset_code, a.name, d.name AS dept, a.category')
+            ->join('departments d', 'd.id = a.department_id', 'left')
+            ->where('a.deleted_at', null)
+            ->orderBy('a.name');
+
+        if ($deptId !== null) {
+            $builder->where('a.department_id', $deptId);
+        }
+
+        $rows = $builder->get()->getResultArray();
+
+        $out = [];
+        foreach ($rows as $r) {
+            $out[$r['id']] = [
+                'label' => "[{$r['asset_code']}] {$r['name']}" . ($r['dept'] ? " — {$r['dept']}" : ''),
+                'category' => $r['category']
+            ];
+        }
+        return $out;
+    }
+    
+    // Helper to get simple label-value array for dropdown (for backward compatibility)
+    public function getAssetsDropdownSimple(?int $deptId = null): array
     {
         $builder = $this->db->table('assets a')
             ->select('a.id, a.asset_code, a.name, d.name AS dept')
