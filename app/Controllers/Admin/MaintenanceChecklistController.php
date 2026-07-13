@@ -51,7 +51,7 @@ class MaintenanceChecklistController extends BaseController
         }
 
         // Buat checklist instance baru
-        $userId = session()->get('id');
+        $userId = session()->get('user_id');
         $checklistId = $this->checklistModel->createChecklistFromTemplate(
             $asset['id'],
             $template['id'],

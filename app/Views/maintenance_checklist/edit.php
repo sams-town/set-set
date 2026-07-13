@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/admin') ?>
+<?= $this->extend('inventory/_layout') ?>
 
 <?= $this->section('content') ?>
 

@@ -31,6 +31,7 @@ class QrScanController extends BaseController
     {
         $this->assetModel = new InventoryAssetModel();
         $this->logModel   = new MaintenanceLogModel();
+        $this->woModel    = new WorkOrderModel();
         $this->db         = \Config\Database::connect();
     }
 
