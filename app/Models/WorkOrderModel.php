@@ -310,16 +310,35 @@ class WorkOrderModel
     public function getTechniciansDropdown(): array
     {
         $rows = $this->db->table('users')
-            ->select('id, name')
-            ->whereIn('role', ['admin', 'technician'])
+            ->select('id, name, role')
+            ->whereIn('role', ['admin', 'technician', 'it', 'atem'])
             ->where('is_active', 1)
             ->where('deleted_at', null)
+            ->orderBy('role')
             ->orderBy('name')
             ->get()->getResultArray();
 
         $out = [];
         foreach ($rows as $r) { $out[$r['id']] = $r['name']; }
         return $out;
+    }
+
+    public function getTechniciansByRole(): array
+    {
+        $rows = $this->db->table('users')
+            ->select('id, name, role')
+            ->whereIn('role', ['technician', 'it', 'atem'])
+            ->where('is_active', 1)
+            ->where('deleted_at', null)
+            ->orderBy('role')
+            ->orderBy('name')
+            ->get()->getResultArray();
+
+        $groups = ['technician' => [], 'it' => [], 'atem' => []];
+        foreach ($rows as $r) {
+            $groups[$r['role']][] = ['id' => $r['id'], 'name' => $r['name']];
+        }
+        return $groups;
     }
 
     public function getAssetsDropdown(?int $deptId = null): array

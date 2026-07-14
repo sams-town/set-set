@@ -3,6 +3,19 @@
 <?php
 $isEdit = !empty($wo);
 $v      = fn($key, $default = '') => old($key, $wo[$key] ?? $default);
+
+// Deteksi role teknisi yang sedang terpilih (untuk mode edit)
+$currentTechRole = '';
+if ($isEdit && !empty($wo['assigned_to'])) {
+    foreach (['technician','it','atem'] as $grp) {
+        foreach (($technicians_by_role[$grp] ?? []) as $t) {
+            if ((int)$t['id'] === (int)$wo['assigned_to']) {
+                $currentTechRole = $grp;
+                break 2;
+            }
+        }
+    }
+}
 ?>
 
 <!-- Breadcrumb -->
@@ -229,13 +242,31 @@ $v      = fn($key, $default = '') => old($key, $wo[$key] ?? $default);
         <!-- Teknisi -->
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Ditugaskan ke (Teknisi)</label>
-            <select name="assigned_to"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
-                <option value="">-- Belum ditugaskan --</option>
-                <?php foreach ($technicians as $tid => $tname): ?>
-                <option value="<?= $tid ?>" <?= $v('assigned_to') == $tid ? 'selected' : '' ?>><?= esc($tname) ?></option>
-                <?php endforeach; ?>
+
+            <!-- Step 1: Pilih Grup -->
+            <select id="techGroupSelect"
+                    onchange="filterTechByGroup()"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none mb-2">
+                <option value="">-- Pilih Grup --</option>
+                <option value="technician" <?= ($currentTechRole ?? '') === 'technician' ? 'selected' : '' ?>>🔧 Teknisi</option>
+                <option value="it"         <?= ($currentTechRole ?? '') === 'it'         ? 'selected' : '' ?>>💻 IT</option>
+                <option value="atem"       <?= ($currentTechRole ?? '') === 'atem'       ? 'selected' : '' ?>>🔬 ATEM</option>
             </select>
+
+            <!-- Step 2: Pilih Nama (muncul setelah pilih grup) -->
+            <select name="assigned_to" id="techNameSelect"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none <?= empty($currentTechRole ?? '') ? 'hidden' : '' ?>">
+                <option value="">-- Belum ditugaskan --</option>
+                <?php foreach (['technician','it','atem'] as $grp):
+                    foreach (($technicians_by_role[$grp] ?? []) as $t): ?>
+                <option value="<?= $t['id'] ?>"
+                        data-group="<?= $grp ?>"
+                        <?= $v('assigned_to') == $t['id'] ? 'selected' : '' ?>>
+                    <?= esc($t['name']) ?>
+                </option>
+                <?php endforeach; endforeach; ?>
+            </select>
+            <p class="text-xs text-gray-400 mt-1">Pilih grup terlebih dahulu, lalu pilih nama</p>
         </div>
 
         <!-- Vendor -->
@@ -493,7 +524,41 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const td = document.getElementById('targetDate');
     if (td && !td.value) { updateSla(); }
+
+    // Inisialisasi dropdown teknisi (untuk mode edit — sudah ada nilai terpilih)
+    const groupSel = document.getElementById('techGroupSelect');
+    if (groupSel && groupSel.value) {
+        filterTechByGroup();
+    }
 });
+
+// ── Dropdown teknisi bertingkat ──────────────────────────────
+function filterTechByGroup() {
+    const group    = document.getElementById('techGroupSelect').value;
+    const nameSel  = document.getElementById('techNameSelect');
+    const allOpts  = nameSel.querySelectorAll('option[data-group]');
+    const curVal   = nameSel.value; // simpan nilai sebelumnya
+
+    // Sembunyikan/tampilkan option sesuai grup
+    allOpts.forEach(opt => {
+        if (!group || opt.getAttribute('data-group') === group) {
+            opt.style.display = '';
+        } else {
+            opt.style.display = 'none';
+        }
+    });
+
+    // Tampilkan dropdown nama
+    if (group) {
+        nameSel.classList.remove('hidden');
+        // Jika nilai sebelumnya masih valid di grup ini, pertahankan; kalau tidak, reset
+        const stillValid = group && nameSel.querySelector(`option[data-group="${group}"][value="${curVal}"]`);
+        if (!stillValid) { nameSel.value = ''; }
+    } else {
+        nameSel.classList.add('hidden');
+        nameSel.value = '';
+    }
+}
 </script>
 
 
