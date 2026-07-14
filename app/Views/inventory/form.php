@@ -364,7 +364,10 @@
                             </option>
                         <?php endforeach; ?>
                     </select>
-                    <p class="text-xs text-gray-400 mt-1">Interval untuk preventive maintenance (PM)</p>
+                    <p class="text-xs text-gray-400 mt-1">
+                        Interval untuk preventive maintenance (PM).
+                        <span class="text-blue-500 font-medium">Mengisi field ini akan otomatis membuat/update jadwal PM di menu Preventive Maintenance.</span>
+                    </p>
                 </div>
             </div>
         </div>

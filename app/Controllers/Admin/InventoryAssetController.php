@@ -364,6 +364,61 @@ class InventoryAssetController extends BaseController
         $this->model->update($id, $newData);
         $this->logModel->record($id, 'diubah', 'Data aset diperbarui.', $asset, $newData);
 
+        // ── Auto-sync pm_schedules dari pm_interval_days ────────
+        $newInterval = $this->request->getPost('pm_interval_days') ?: null;
+        $oldInterval = $asset['pm_interval_days'] ?? null;
+
+        if ($newInterval && $newInterval !== $oldInterval) {
+            // Cari recurring yang paling cocok dengan interval
+            $recurringMap = \App\Models\PreventiveMaintenanceModel::RECURRING_DAYS;
+            $bestRecurring = 'monthly';
+            foreach ($recurringMap as $key => $days) {
+                if ((int)$days === (int)$newInterval) {
+                    $bestRecurring = $key;
+                    break;
+                }
+            }
+
+            $pmModel = new \App\Models\PreventiveMaintenanceModel();
+
+            // Cek apakah sudah ada PM schedule "General PM" untuk aset ini
+            $db = \Config\Database::connect();
+            $existing = $db->table('pm_schedules')
+                ->where('asset_id', $id)
+                ->where('deleted_at', null)
+                ->where('title', 'Pemeliharaan Rutin — ' . $this->request->getPost('name'))
+                ->get()->getRowArray();
+
+            if ($existing) {
+                // Update interval schedule yang ada
+                $pmModel->update($existing['id'], [
+                    'recurring'     => $bestRecurring,
+                    'interval_days' => (int) $newInterval,
+                ]);
+            } else {
+                // Buat schedule PM baru otomatis
+                $pmModel->insert([
+                    'asset_id'    => $id,
+                    'schedule_type' => 'pm',
+                    'title'       => 'Pemeliharaan Rutin — ' . $this->request->getPost('name'),
+                    'recurring'   => $bestRecurring,
+                    'priority'    => 'sedang',
+                    'start_date'  => date('Y-m-d'),
+                    'is_active'   => 1,
+                    'created_by'  => session()->get('user_id'),
+                ]);
+            }
+        } elseif (!$newInterval && $oldInterval) {
+            // Interval dihapus → nonaktifkan PM schedule otomatis yang ada
+            $db = \Config\Database::connect();
+            $db->table('pm_schedules')
+                ->where('asset_id', $id)
+                ->where('deleted_at', null)
+                ->where('title', 'Pemeliharaan Rutin — ' . ($asset['name'] ?? ''))
+                ->update(['is_active' => 0]);
+        }
+        // ────────────────────────────────────────────────────────
+
         return redirect()->to('/admin/inventory/' . $id)
             ->with('success', 'Aset berhasil diperbarui.');
     }
