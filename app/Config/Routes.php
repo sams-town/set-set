@@ -162,6 +162,7 @@ $routes->group('admin', ['filter' => 'auth'], function ($routes) {
     
     // ── Maintenance Checklist (Admin & Technician Only) ─────────
     $routes->group('checklist', ['filter' => 'role:admin,technician'], function ($routes) {
+        $routes->get('/',                       'Admin\MaintenanceChecklistController::index');
         $routes->get('new/(:segment)',          'Admin\MaintenanceChecklistController::new/$1');
         $routes->get('(:num)/edit',             'Admin\MaintenanceChecklistController::edit/$1');
         $routes->post('(:num)',                 'Admin\MaintenanceChecklistController::update/$1');

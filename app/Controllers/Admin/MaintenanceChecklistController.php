@@ -23,6 +23,48 @@ class MaintenanceChecklistController extends BaseController
         $this->db             = \Config\Database::connect();
     }
 
+    private const PER_PAGE = 20;
+
+    /**
+     * Daftar semua riwayat checklist
+     * GET /admin/checklist
+     */
+    public function index()
+    {
+        $filters = [
+            'search'       => $this->request->getGet('search'),
+            'date_from'    => $this->request->getGet('date_from'),
+            'date_to'      => $this->request->getGet('date_to'),
+            'technician_id'=> $this->request->getGet('technician_id'),
+        ];
+
+        $page       = max(1, (int) $this->request->getGet('page'));
+        $offset     = ($page - 1) * self::PER_PAGE;
+        $total      = $this->checklistModel->countFiltered($filters);
+        $checklists = $this->checklistModel->getList($filters, self::PER_PAGE, $offset);
+        $totalPages = $total > 0 ? (int) ceil($total / self::PER_PAGE) : 1;
+
+        // Dropdown teknisi
+        $technicians = $this->db->table('users')
+            ->select('id, name')
+            ->whereIn('role', ['admin', 'technician'])
+            ->where('is_active', 1)
+            ->where('deleted_at', null)
+            ->orderBy('name')
+            ->get()->getResultArray();
+
+        return view('maintenance_checklist/index', [
+            'title'        => 'Riwayat Checklist Pemeliharaan',
+            'checklists'   => $checklists,
+            'filters'      => $filters,
+            'technicians'  => $technicians,
+            'page'         => $page,
+            'total_pages'  => $totalPages,
+            'total_records'=> $total,
+            'per_page'     => self::PER_PAGE,
+        ]);
+    }
+
     /**
      * Halaman untuk mengisi checklist dari QR scan atau dari aset
      * GET /admin/checklist/new/{assetCode}

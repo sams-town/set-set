@@ -17,6 +17,83 @@ class MaintenanceChecklistModel extends Model
         'technician_signature', 'supervisor_signature', 'user_signature'
     ];
 
+    // Get all checklists with pagination and filters
+    public function getList(array $filters = [], int $limit = 20, int $offset = 0): array
+    {
+        $builder = $this->db->table('maintenance_checklist_instances ci')
+            ->select('ci.id, ci.checklist_date, ci.notes, ci.created_at,
+                      a.name as asset_name, a.asset_code, a.category as asset_category,
+                      d.name as department_name,
+                      u.name as technician_name,
+                      COUNT(ans.id) as total_items,
+                      SUM(CASE WHEN ans.status = "baik" THEN 1 ELSE 0 END) as items_ok,
+                      SUM(CASE WHEN ans.status = "tidak" THEN 1 ELSE 0 END) as items_nok')
+            ->join('assets a', 'a.id = ci.asset_id', 'left')
+            ->join('departments d', 'd.id = a.department_id', 'left')
+            ->join('users u', 'u.id = ci.technician_id', 'left')
+            ->join('maintenance_checklist_answers ans', 'ans.checklist_instance_id = ci.id', 'left')
+            ->where('ci.deleted_at', null)
+            ->groupBy('ci.id');
+
+        if (!empty($filters['search'])) {
+            $s = $filters['search'];
+            $builder->groupStart()
+                ->like('a.name', $s)
+                ->orLike('a.asset_code', $s)
+                ->orLike('u.name', $s)
+                ->groupEnd();
+        }
+        if (!empty($filters['asset_id'])) {
+            $builder->where('ci.asset_id', $filters['asset_id']);
+        }
+        if (!empty($filters['technician_id'])) {
+            $builder->where('ci.technician_id', $filters['technician_id']);
+        }
+        if (!empty($filters['date_from'])) {
+            $builder->where('ci.checklist_date >=', $filters['date_from']);
+        }
+        if (!empty($filters['date_to'])) {
+            $builder->where('ci.checklist_date <=', $filters['date_to']);
+        }
+
+        return $builder
+            ->orderBy('ci.checklist_date', 'DESC')
+            ->orderBy('ci.id', 'DESC')
+            ->limit($limit, $offset)
+            ->get()->getResultArray();
+    }
+
+    public function countFiltered(array $filters = []): int
+    {
+        $builder = $this->db->table('maintenance_checklist_instances ci')
+            ->join('assets a', 'a.id = ci.asset_id', 'left')
+            ->join('users u', 'u.id = ci.technician_id', 'left')
+            ->where('ci.deleted_at', null);
+
+        if (!empty($filters['search'])) {
+            $s = $filters['search'];
+            $builder->groupStart()
+                ->like('a.name', $s)
+                ->orLike('a.asset_code', $s)
+                ->orLike('u.name', $s)
+                ->groupEnd();
+        }
+        if (!empty($filters['asset_id'])) {
+            $builder->where('ci.asset_id', $filters['asset_id']);
+        }
+        if (!empty($filters['technician_id'])) {
+            $builder->where('ci.technician_id', $filters['technician_id']);
+        }
+        if (!empty($filters['date_from'])) {
+            $builder->where('ci.checklist_date >=', $filters['date_from']);
+        }
+        if (!empty($filters['date_to'])) {
+            $builder->where('ci.checklist_date <=', $filters['date_to']);
+        }
+
+        return (int) $builder->countAllResults();
+    }
+
     // Get checklists for an asset
     public function getChecklistsForAsset(int $assetId): array
     {
