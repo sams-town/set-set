@@ -105,17 +105,21 @@ $v = fn($key, $default = '') => old($key, $user[$key] ?? $default);
             <!-- Pilihan Peran -->
             <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Peran (Role) <span class="text-red-500">*</span></label>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                     <?php
                     $roleDesc = [
                         'admin'      => 'Akses penuh ke semua modul',
                         'technician' => 'Kelola WO & PM, tidak akses master data',
+                        'it'         => 'Kelola WO & PM, tidak akses master data',
+                        'atem'       => 'Kelola WO & PM, tidak akses master data',
                         'user'       => 'Input keluhan & lihat status aset',
                     ];
-                    $roleIcons = ['admin' => '🛡️', 'technician' => '🔧', 'user' => '👤'];
+                    $roleIcons = ['admin' => '🛡️', 'technician' => '🔧', 'it' => '💻', 'atem' => '🔬', 'user' => '👤'];
                     $roleColors = [
-                        'admin'      => 'border-red-300 bg-red-50 checked:bg-red-600',
+                        'admin'      => 'border-red-300 bg-red-50',
                         'technician' => 'border-orange-300 bg-orange-50',
+                        'it'         => 'border-purple-300 bg-purple-50',
+                        'atem'       => 'border-teal-300 bg-teal-50',
                         'user'       => 'border-blue-300 bg-blue-50',
                     ];
                     $selectedRole = $v('role', 'user');

@@ -70,10 +70,10 @@
                 ['url' => 'admin/inventory',   'label' => 'Inventory Aset',    'icon' => '🗃️', 'roles' => ['admin', 'user']],
                 ['url' => 'admin/procurement', 'label' => 'Procurement',       'icon' => '🛒', 'roles' => ['admin', 'user', 'pembelian']],
                 ['url' => 'admin/work-orders', 'label' => 'Work Order',        'icon' => '📋', 'roles' => ['admin', 'user']],
-                ['url' => 'admin/pm',          'label' => 'Preventive PM',     'icon' => '🛡️', 'roles' => ['admin', 'technician']],
-                ['url' => 'admin/checklist',   'label' => 'Checklist',         'icon' => '📋', 'roles' => ['admin', 'technician']],
+                ['url' => 'admin/pm',          'label' => 'Preventive PM',     'icon' => '🛡️', 'roles' => ['admin', 'technician', 'it', 'atem']],
+                ['url' => 'admin/checklist',   'label' => 'Checklist',         'icon' => '📋', 'roles' => ['admin', 'technician', 'it', 'atem']],
                 ['url' => 'admin/cm',          'label' => 'Corrective Maint.', 'icon' => '🔧', 'roles' => ['admin']],
-                ['url' => 'admin/work-orders', 'label' => 'Corrective Maint.', 'icon' => '🔧', 'roles' => ['technician']],
+                ['url' => 'admin/work-orders', 'label' => 'Work Order',        'icon' => '📋', 'roles' => ['technician', 'it', 'atem']],
                 ['url' => 'admin/borrows',     'label' => 'Peminjaman',        'icon' => '🔄', 'roles' => ['admin', 'user']],
                 ['url' => 'admin/reports',     'label' => 'Laporan',           'icon' => '📑', 'roles' => ['admin']],
             ];

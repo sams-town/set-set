@@ -12,6 +12,8 @@ class UserModel
     public const ROLES = [
         'admin'      => 'Administrator',
         'technician' => 'Teknisi',
+        'it'         => 'IT',
+        'atem'       => 'ATEM',
         'user'       => 'Staff / User',
     ];
 

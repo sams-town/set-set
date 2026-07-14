@@ -69,7 +69,7 @@ class UserController extends BaseController
             'name'     => 'required|min_length[2]|max_length[100]',
             'email'    => 'required|valid_email',
             'password' => 'required|min_length[6]',
-            'role'     => 'required|in_list[admin,technician,user]',
+            'role'     => 'required|in_list[admin,technician,it,atem,user]',
         ];
 
         if (! $this->validate($rules)) {
@@ -134,7 +134,7 @@ class UserController extends BaseController
         $rules = [
             'name'  => 'required|min_length[2]|max_length[100]',
             'email' => 'required|valid_email',
-            'role'  => 'required|in_list[admin,technician,user]',
+            'role'  => 'required|in_list[admin,technician,it,atem,user]',
         ];
 
         if (! $this->validate($rules)) {

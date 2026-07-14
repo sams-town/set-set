@@ -130,7 +130,7 @@ $routes->group('admin', ['filter' => 'auth'], function ($routes) {
     });
 
     // ── Work Orders (Admin, User & Technician, Delete: Admin Only)
-    $routes->group('work-orders', ['filter' => 'role:admin,user,technician'], function ($routes) {
+    $routes->group('work-orders', ['filter' => 'role:admin,user,technician,it,atem'], function ($routes) {
         $routes->get('/',                    'Admin\WorkOrderController::index');
         $routes->get('new',                  'Admin\WorkOrderController::create');
         $routes->post('/',                   'Admin\WorkOrderController::store');
@@ -142,13 +142,13 @@ $routes->group('admin', ['filter' => 'auth'], function ($routes) {
     });
 
     // ── Corrective Maintenance (Admin & Technician Only) ────────
-    $routes->group('cm', ['filter' => 'role:admin,technician'], function ($routes) {
+    $routes->group('cm', ['filter' => 'role:admin,technician,it,atem'], function ($routes) {
         $routes->get('/',                'Admin\CorrectiveMaintenanceController::index');
         $routes->get('asset/(:num)',     'Admin\CorrectiveMaintenanceController::showAsset/$1');
     });
 
     // ── Preventive Maintenance (Admin & Technician Only) ────────
-    $routes->group('pm', ['filter' => 'role:admin,technician'], function ($routes) {
+    $routes->group('pm', ['filter' => 'role:admin,technician,it,atem'], function ($routes) {
         $routes->get('/',                        'Admin\PreventiveMaintenanceController::index');
         $routes->get('new',                      'Admin\PreventiveMaintenanceController::create');
         $routes->post('/',                       'Admin\PreventiveMaintenanceController::store');
@@ -161,7 +161,7 @@ $routes->group('admin', ['filter' => 'auth'], function ($routes) {
     });
     
     // ── Maintenance Checklist (Admin & Technician Only) ─────────
-    $routes->group('checklist', ['filter' => 'role:admin,technician'], function ($routes) {
+    $routes->group('checklist', ['filter' => 'role:admin,technician,it,atem'], function ($routes) {
         $routes->get('/',                       'Admin\MaintenanceChecklistController::index');
         $routes->get('new/(:segment)',          'Admin\MaintenanceChecklistController::new/$1');
         $routes->get('(:num)/edit',             'Admin\MaintenanceChecklistController::edit/$1');
