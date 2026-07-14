@@ -231,7 +231,10 @@ $ds = $dash_stats;
                     
                     <!-- Aset -->
                     <td class="px-3 py-2.5 text-xs min-w-[140px]">
-                        <div class="font-medium text-gray-800 truncate"><?= esc($pm['asset_name'] ?? '-') ?></div>
+                        <a href="<?= base_url('admin/inventory/'.$pm['asset_id']) ?>"
+                           class="font-medium text-blue-600 hover:underline truncate block">
+                            <?= esc($pm['asset_name'] ?? '-') ?>
+                        </a>
                         <code class="text-gray-400"><?= esc($pm['asset_code'] ?? '') ?></code>
                         <div class="text-gray-400"><?= esc($pm['department_name'] ?? '') ?></div>
                     </td>

@@ -10,6 +10,10 @@ $priorityColor  = \App\Models\PreventiveMaintenanceModel::PRIORITY_COLORS;
 <div class="flex items-center gap-2 text-sm text-gray-500 mb-4">
     <a href="<?= base_url('admin/pm') ?>" class="hover:text-blue-600">PM</a>
     <span>›</span>
+    <a href="<?= base_url('admin/inventory/'.$schedule['asset_id']) ?>" class="hover:text-blue-600">
+        <?= esc($schedule['asset_name']) ?>
+    </a>
+    <span>›</span>
     <span class="font-medium text-gray-800"><?= esc($schedule['title']) ?></span>
 </div>
 
@@ -33,6 +37,10 @@ $priorityColor  = \App\Models\PreventiveMaintenanceModel::PRIORITY_COLORS;
         </div>
     </div>
     <div class="flex gap-2 flex-wrap">
+        <a href="<?= base_url('admin/inventory/'.$schedule['asset_id']) ?>"
+           class="inline-flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-3 py-2 rounded-lg">
+            🗃️ Lihat Aset
+        </a>
         <button onclick="showMarkDoneModal()"
                 class="inline-flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-3 py-2 rounded-lg">
             ✅ Mark as Done
