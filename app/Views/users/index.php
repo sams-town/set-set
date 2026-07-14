@@ -19,12 +19,14 @@
 <?php endif; ?>
 
 <!-- Stats per Role -->
-<div class="grid grid-cols-3 gap-3 mb-5">
+<div class="grid grid-cols-3 sm:grid-cols-5 gap-3 mb-5">
     <?php
-    $roleIcons = ['admin' => '🛡️', 'technician' => '🔧', 'user' => '👤'];
+    $roleIcons = ['admin' => '🛡️', 'technician' => '🔧', 'it' => '💻', 'atem' => '🔬', 'user' => '👤'];
     $roleColors = [
         'admin'      => 'border-red-400 bg-red-50 text-red-700',
         'technician' => 'border-orange-400 bg-orange-50 text-orange-700',
+        'it'         => 'border-purple-400 bg-purple-50 text-purple-700',
+        'atem'       => 'border-teal-400 bg-teal-50 text-teal-700',
         'user'       => 'border-blue-400 bg-blue-50 text-blue-700',
     ];
     foreach ($roles as $key => $label):
@@ -97,6 +99,8 @@
                 $roleBadge = [
                     'admin'      => 'bg-red-100 text-red-700',
                     'technician' => 'bg-orange-100 text-orange-700',
+                    'it'         => 'bg-purple-100 text-purple-700',
+                    'atem'       => 'bg-teal-100 text-teal-700',
                     'user'       => 'bg-blue-100 text-blue-700',
                 ];
                 foreach ($users as $u):
