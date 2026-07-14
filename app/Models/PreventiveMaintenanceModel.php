@@ -280,6 +280,9 @@ class PreventiveMaintenanceModel
                 ]);
         }
 
+        // Sync pm_interval_days ke tabel assets
+        $this->syncPmIntervalToAsset((int) $data['asset_id']);
+
         return $id > 0 ? (int) $id : false;
     }
 
@@ -301,6 +304,10 @@ class PreventiveMaintenanceModel
                         'next_calibration_date' => $schedule['next_due'],
                     ]);
             }
+            // Sync pm_interval_days ke tabel assets
+            if ($schedule) {
+                $this->syncPmIntervalToAsset((int) $schedule['asset_id']);
+            }
         }
 
         return $ok;
@@ -313,12 +320,16 @@ class PreventiveMaintenanceModel
             ->where('id', $id)
             ->update(['deleted_at' => date('Y-m-d H:i:s'), 'is_active' => 0]);
 
-        if ($ok && $schedule && ($schedule['schedule_type'] ?? 'pm') === 'calibration') {
-            $this->db->table('assets')
-                ->where('id', $schedule['asset_id'])
-                ->update([
-                    'next_calibration_date' => null,
-                ]);
+        if ($ok && $schedule) {
+            if (($schedule['schedule_type'] ?? 'pm') === 'calibration') {
+                $this->db->table('assets')
+                    ->where('id', $schedule['asset_id'])
+                    ->update([
+                        'next_calibration_date' => null,
+                    ]);
+            }
+            // Sync pm_interval_days ke tabel assets
+            $this->syncPmIntervalToAsset((int) $schedule['asset_id']);
         }
 
         return $ok;
@@ -337,13 +348,48 @@ class PreventiveMaintenanceModel
 
         $nextDue = self::calcNextDue($doneDate, $schedule['recurring']);
 
-        return $this->db->table('pm_schedules')
+        $ok = $this->db->table('pm_schedules')
             ->where('id', $id)
             ->update([
                 'last_done'  => $doneDate,
                 'next_due'   => $nextDue,
                 'updated_at' => date('Y-m-d H:i:s'),
             ]);
+
+        // Sync pm_interval_days ke tabel assets setelah mark done
+        if ($ok) {
+            $this->syncPmIntervalToAsset((int) $schedule['asset_id']);
+        }
+
+        return $ok;
+    }
+
+    // ================================================================
+    // PRIVATE HELPERS
+    // ================================================================
+
+    /**
+     * Sync pm_interval_days di tabel assets dari pm_schedules aktif.
+     * Ambil interval_days terkecil dari semua PM aktif (bukan kalibrasi)
+     * untuk aset tersebut, lalu update assets.pm_interval_days.
+     */
+    private function syncPmIntervalToAsset(int $assetId): void
+    {
+        $row = $this->db->table('pm_schedules')
+            ->select('MIN(interval_days) AS min_interval')
+            ->where('asset_id', $assetId)
+            ->where('is_active', 1)
+            ->where('deleted_at', null)
+            ->where('schedule_type !=', 'calibration')
+            ->get()->getRowArray();
+
+        $interval = ($row && $row['min_interval'] !== null)
+            ? (int) $row['min_interval']
+            : null;
+
+        $this->db->table('assets')
+            ->where('id', $assetId)
+            ->update(['pm_interval_days' => $interval]);
     }
 
     // ================================================================

@@ -293,9 +293,14 @@ $scLabel = ['baru' => '🆕 Baru', '2nd' => '🔄 2nd'];
                                 <div class="font-medium text-gray-800">
                                     <?= $pm['next_due'] ? date('d M Y', strtotime($pm['next_due'])) : '-' ?>
                                 </div>
-                                <div class="text-xs text-gray-400">
-                                    <?= $dueStatus['label'] ?>
+                                <div class="text-xs <?= $dueStatus['badge'] ?> inline-block px-1.5 py-0.5 rounded mt-0.5">
+                                    <?= $dueStatus['icon'] ?> <?= $dueStatus['label'] ?>
                                 </div>
+                                <?php if ($pm['last_done']): ?>
+                                <div class="text-xs text-gray-400 mt-0.5">
+                                    Terakhir: <?= date('d M Y', strtotime($pm['last_done'])) ?>
+                                </div>
+                                <?php endif; ?>
                             </td>
                             <td class="py-2 text-gray-600">
                                 <?= esc($pm['assigned_to_name'] ?? '-') ?>
