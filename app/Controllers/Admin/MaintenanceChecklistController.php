@@ -136,11 +136,15 @@ class MaintenanceChecklistController extends BaseController
         $answers = $this->request->getPost('answers') ?? [];
         $this->checklistModel->saveChecklistAnswers($checklistId, $answers);
 
-        // Simpan catatan dan lain-lain
-        $notes = $this->request->getPost('notes');
-        $this->checklistModel->update($checklistId, ['notes' => $notes]);
+        // Simpan catatan dan tanda tangan
+        $this->checklistModel->update($checklistId, [
+            'notes'                => $this->request->getPost('notes'),
+            'technician_signature' => $this->request->getPost('technician_signature') ?: null,
+            'supervisor_signature' => $this->request->getPost('supervisor_signature') ?: null,
+            'user_signature'       => $this->request->getPost('user_signature') ?: null,
+        ]);
 
-        return redirect()->to("/admin/checklist/{$checklistId}/edit")
+        return redirect()->to("/admin/checklist/{$checklistId}")
             ->with('success', 'Checklist berhasil disimpan');
     }
 
