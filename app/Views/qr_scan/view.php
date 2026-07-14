@@ -380,7 +380,10 @@ $woStatusMap = [
             <?php endif; ?>
             <code class="font-mono text-sm text-gray-700 font-bold mb-1"><?= esc($asset['asset_code']) ?></code>
             <p class="text-xs text-gray-400 mb-4 text-center"><?= esc($asset['name']) ?></p>
-            <?php if (session()->get('id')): ?>
+            <?php
+            $canChecklist = in_array(session()->get('role'), ['admin', 'technician', 'it', 'atem']);
+            if ($canChecklist):
+            ?>
                 <div class="mb-4 w-full no-print">
                     <a href="<?= base_url('admin/checklist/new/' . $asset['asset_code']) ?>"
                        class="block text-center text-sm bg-orange-600 hover:bg-orange-700 text-white py-3 rounded-xl font-medium transition-colors">
