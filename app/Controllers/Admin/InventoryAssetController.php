@@ -440,6 +440,35 @@ class InventoryAssetController extends BaseController
         $this->model->delete($id);
         $this->logModel->record($id, 'dihapus', 'Aset dihapus: ' . $asset['asset_code']);
 
+        // ── Cascade soft-delete ke semua data terkait ───────────
+        $db = \Config\Database::connect();
+        $now = date('Y-m-d H:i:s');
+
+        // 1. Soft-delete semua PM schedules milik aset ini
+        $db->table('pm_schedules')
+            ->where('asset_id', $id)
+            ->where('deleted_at', null)
+            ->update(['deleted_at' => $now, 'is_active' => 0]);
+
+        // 2. Soft-delete / cancel semua Work Orders yang masih open/in_progress
+        $db->table('work_orders')
+            ->where('asset_id', $id)
+            ->whereIn('status', ['open', 'in_progress', 'waiting_part'])
+            ->update(['status' => 'cancelled', 'updated_at' => $now]);
+
+        // 3. Soft-delete checklist instances milik aset ini
+        $db->table('maintenance_checklist_instances')
+            ->where('asset_id', $id)
+            ->where('deleted_at', null)
+            ->update(['deleted_at' => $now]);
+
+        // 4. Hapus borrow aktif (tandai dikembalikan)
+        $db->table('borrows')
+            ->where('asset_id', $id)
+            ->where('status', 'dipinjam')
+            ->update(['status' => 'dikembalikan', 'return_date_actual' => date('Y-m-d'), 'updated_at' => $now]);
+        // ────────────────────────────────────────────────────────
+
         helper('qrcode');
         qr_delete('qr_' . $asset['asset_code'] . '.png');
         qr_delete('qr_' . $asset['asset_code'] . '.svg');
