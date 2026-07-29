@@ -41,6 +41,14 @@ $routes->group('admin', ['filter' => 'auth'], function ($routes) {
 
     // ── Master Data (Admin Only) ────────────────────────────────
     $routes->group('', ['filter' => 'role:admin'], function ($routes) {
+        // Vendors
+        $routes->get('vendors',                'Admin\VendorController::index');
+        $routes->get('vendors/new',            'Admin\VendorController::create');
+        $routes->post('vendors',               'Admin\VendorController::store');
+        $routes->get('vendors/(:num)/edit',    'Admin\VendorController::edit/$1');
+        $routes->post('vendors/(:num)/update', 'Admin\VendorController::update/$1');
+        $routes->post('vendors/(:num)/delete', 'Admin\VendorController::delete/$1');
+
         // Categories
         $routes->get('categories',                'Admin\CategoryController::index');
         $routes->get('categories/new',            'Admin\CategoryController::create');
