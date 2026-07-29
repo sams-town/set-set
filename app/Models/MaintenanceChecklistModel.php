@@ -13,7 +13,7 @@ class MaintenanceChecklistModel extends Model
     protected $useTimestamps  = true;
     protected $allowedFields  = [
         'asset_id', 'checklist_template_id', 'work_order_id',
-        'technician_id', 'checklist_date', 'notes',
+        'technician_id', 'checklist_date', 'unit_ruangan', 'petugas_nama', 'notes', 'follow_up',
         'technician_signature', 'supervisor_signature', 'user_signature'
     ];
 
@@ -110,9 +110,16 @@ class MaintenanceChecklistModel extends Model
     public function getChecklistInstance(int $checklistId): ?array
     {
         $instance = $this->db->table('maintenance_checklist_instances ci')
-            ->select('ci.*, a.name as asset_name, a.asset_code, u.name as technician_name')
-            ->join('assets a', 'a.id = ci.asset_id', 'left')
-            ->join('users u', 'u.id = ci.technician_id', 'left')
+            ->select('ci.*,
+                      a.name as asset_name, a.asset_code, a.brand, a.model as asset_model,
+                      a.serial_number, a.category as asset_category,
+                      d.name as department_name,
+                      l.name as location_name, l.building,
+                      u.name as technician_name')
+            ->join('assets a',      'a.id = ci.asset_id',    'left')
+            ->join('departments d', 'd.id = a.department_id','left')
+            ->join('locations l',   'l.id = a.location_id',  'left')
+            ->join('users u',       'u.id = ci.technician_id','left')
             ->where('ci.id', $checklistId)
             ->where('ci.deleted_at', null)
             ->get()->getRowArray();
@@ -210,22 +217,18 @@ class MaintenanceChecklistModel extends Model
         ]);
         $templateId = $this->db->insertID();
 
-        // Add default items
+        // Add default items sesuai FORM CEKLIS PEMELIHARAAN PERALATAN RUMAH SAKIT
         $defaultItems = [
-            'Body / Chasing',
-            'Power Supply',
-            'Pole Clamp',
-            'Batere Pack',
-            'Display',
-            'Control Key Pad',
-            'Self Test',
-            'Program Menu',
-            'System Setup',
-            'Compatibility Infusion Set',
-            'Pluger',
-            'Door Oper & Close function',
-            'Sensor - sensor safety',
-            'Lain - lain',
+            'Kondisi fisik alat bersih dan utuh',
+            'Kabel, steker, dan konektor aman',
+            'Fungsi tombol/saklar normal',
+            'Display/indikator berfungsi',
+            'Alarm/sistem pengaman berfungsi (jika ada)',
+            'Tidak terdapat kebocoran/kerusakan',
+            'Performa alat normal saat diuji',
+            'Label identitas dan kalibrasi tersedia (jika diperlukan)',
+            'Area sekitar alat bersih dan aman',
+            'Alat siap digunakan',
         ];
 
         foreach ($defaultItems as $i => $item) {

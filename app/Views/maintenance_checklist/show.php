@@ -5,7 +5,17 @@
 <div class="container mx-auto p-4 max-w-6xl">
     <div class="mb-4 flex items-center justify-between">
         <h1 class="text-xl font-bold text-gray-800">Detail Checklist Pemeliharaan</h1>
-        <a href="javascript:history.back()" class="text-gray-500 hover:text-gray-700 text-sm">← Kembali</a>
+        <div class="flex gap-2">
+            <a href="<?= base_url('admin/checklist/' . $checklist['id'] . '/print') ?>" target="_blank"
+               class="inline-flex items-center gap-1.5 bg-teal-700 hover:bg-teal-800 text-white text-sm font-medium px-4 py-2 rounded-lg">
+                🖨️ Print / PDF
+            </a>
+            <a href="<?= base_url('admin/checklist/' . $checklist['id'] . '/edit') ?>"
+               class="inline-flex items-center gap-1.5 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium px-4 py-2 rounded-lg">
+                ✏️ Edit
+            </a>
+            <a href="javascript:history.back()" class="border border-gray-300 text-gray-500 hover:bg-gray-50 text-sm px-4 py-2 rounded-lg">← Kembali</a>
+        </div>
     </div>
 
     <!-- Info Aset -->

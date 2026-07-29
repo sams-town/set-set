@@ -155,10 +155,16 @@
                         <?php endif; ?>
                     </td>
                     <td class="px-4 py-3 text-center">
-                        <a href="<?= base_url('admin/checklist/' . $cl['id']) ?>"
-                           class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-medium transition-colors">
-                            👁 Lihat
-                        </a>
+                        <div class="flex items-center justify-center gap-1.5">
+                            <a href="<?= base_url('admin/checklist/' . $cl['id'] . '/print') ?>" target="_blank"
+                               class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-700 text-xs font-medium transition-colors">
+                                🖨️ Print
+                            </a>
+                            <a href="<?= base_url('admin/checklist/' . $cl['id']) ?>"
+                               class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-medium transition-colors">
+                                👁 Lihat
+                            </a>
+                        </div>
                     </td>
                 </tr>
                 <?php endforeach; ?>

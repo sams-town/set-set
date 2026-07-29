@@ -136,9 +136,13 @@ class MaintenanceChecklistController extends BaseController
         $answers = $this->request->getPost('answers') ?? [];
         $this->checklistModel->saveChecklistAnswers($checklistId, $answers);
 
-        // Simpan catatan dan tanda tangan
+        // Simpan catatan, tindak lanjut, dan tanda tangan
+        $followUp = $this->request->getPost('follow_up') ?? [];
         $this->checklistModel->update($checklistId, [
+            'unit_ruangan'         => $this->request->getPost('unit_ruangan') ?: null,
+            'petugas_nama'         => $this->request->getPost('petugas_nama') ?: null,
             'notes'                => $this->request->getPost('notes'),
+            'follow_up'            => !empty($followUp) ? json_encode($followUp) : null,
             'technician_signature' => $this->request->getPost('technician_signature') ?: null,
             'supervisor_signature' => $this->request->getPost('supervisor_signature') ?: null,
             'user_signature'       => $this->request->getPost('user_signature') ?: null,
@@ -146,6 +150,23 @@ class MaintenanceChecklistController extends BaseController
 
         return redirect()->to("/admin/checklist/{$checklistId}")
             ->with('success', 'Checklist berhasil disimpan');
+    }
+
+    /**
+     * Print/PDF checklist
+     * GET /admin/checklist/{checklistId}/print
+     */
+    public function printOut(int $checklistId)
+    {
+        $checklist = $this->checklistModel->getChecklistInstance($checklistId);
+        if (!$checklist) {
+            return redirect()->to('/admin/checklist')->with('error', 'Checklist tidak ditemukan');
+        }
+
+        return view('maintenance_checklist/print', [
+            'title'     => 'Cetak Checklist — ' . $checklist['asset_name'],
+            'checklist' => $checklist,
+        ]);
     }
 
     /**

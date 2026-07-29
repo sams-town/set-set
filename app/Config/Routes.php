@@ -174,6 +174,7 @@ $routes->group('admin', ['filter' => 'auth'], function ($routes) {
         $routes->get('/',                       'Admin\MaintenanceChecklistController::index');
         $routes->get('new/(:segment)',          'Admin\MaintenanceChecklistController::new/$1');
         $routes->get('(:num)/edit',             'Admin\MaintenanceChecklistController::edit/$1');
+        $routes->get('(:num)/print',            'Admin\MaintenanceChecklistController::printOut/$1');
         $routes->post('(:num)',                 'Admin\MaintenanceChecklistController::update/$1');
         $routes->get('(:num)',                  'Admin\MaintenanceChecklistController::show/$1');
     });
