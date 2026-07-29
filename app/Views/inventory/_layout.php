@@ -66,7 +66,7 @@
 
             // Menu utama dengan filter peran/role
             $allNav = [
-                ['url' => 'admin/dashboard',   'label' => 'Dashboard',         'icon' => '📊', 'roles' => ['admin']],
+                ['url' => 'admin/dashboard',   'label' => 'Dashboard',         'icon' => '📊', 'roles' => ['admin', 'user']],
                 ['url' => 'admin/procurement', 'label' => 'Procurement',       'icon' => '🛒', 'roles' => ['admin', 'user', 'pembelian']],
                 ['url' => 'admin/inventory',   'label' => 'Inventory Aset',    'icon' => '🗃️', 'roles' => ['admin', 'user']],
                 ['url' => 'admin/vendors',     'label' => 'Vendor',            'icon' => '🏭', 'roles' => ['admin']],

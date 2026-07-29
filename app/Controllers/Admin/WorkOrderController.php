@@ -68,6 +68,8 @@ class WorkOrderController extends BaseController
             'department_id' => $deptScope ?? $this->request->getGet('department_id'),
             'category_wo'   => $this->request->getGet('category_wo'),
             'overdue'       => $this->request->getGet('overdue'),
+            // User hanya lihat WO yang dia buat sendiri
+            'requested_by'  => (session()->get('role') === 'user') ? session()->get('user_id') : null,
         ];
 
         $page       = max(1, (int) $this->request->getGet('page'));
@@ -252,12 +254,18 @@ class WorkOrderController extends BaseController
             return redirect()->to('/admin/work-orders')->with('error', 'Work Order tidak ditemukan.');
         }
 
-        $role = session()->get('role');
+        $role   = session()->get('role');
         $userId = (int) session()->get('user_id');
-        if ($role === 'technician') {
+
+        // Technician/IT/ATEM hanya bisa edit WO yang ditugaskan ke mereka
+        if (in_array($role, ['technician', 'it', 'atem'])) {
             if ((int) $wo['assigned_to'] !== $userId) {
-                return redirect()->to('/admin/work-orders')->with('error', 'Anda hanya dapat merespon/mengedit Work Order yang ditugaskan kepada Anda.');
+                return redirect()->to('/admin/work-orders')->with('error', 'Anda hanya dapat mengedit Work Order yang ditugaskan kepada Anda.');
             }
+        }
+        // User hanya bisa edit WO yang dia buat sendiri
+        if ($role === 'user' && (int) $wo['requested_by'] !== $userId) {
+            return redirect()->to('/admin/work-orders')->with('error', 'Anda hanya dapat mengedit Work Order yang Anda buat sendiri.');
         }
 
         $deptScope = $this->getDeptScope();
@@ -296,12 +304,18 @@ class WorkOrderController extends BaseController
             return redirect()->to('/admin/work-orders')->with('error', 'Work Order tidak ditemukan.');
         }
 
-        $role = session()->get('role');
+        $role   = session()->get('role');
         $userId = (int) session()->get('user_id');
-        if ($role === 'technician') {
+
+        if (in_array($role, ['technician', 'it', 'atem'])) {
             if ((int) $wo['assigned_to'] !== $userId) {
-                return redirect()->to('/admin/work-orders')->with('error', 'Anda hanya dapat merespon/mengedit Work Order yang ditugaskan kepada Anda.');
+                return redirect()->to('/admin/work-orders')->with('error', 'Anda hanya dapat mengedit Work Order yang ditugaskan kepada Anda.');
             }
+        }
+        if ($role === 'user' && (int) $wo['requested_by'] !== $userId) {
+            return redirect()->to('/admin/work-orders')->with('error', 'Anda hanya dapat mengedit Work Order yang Anda buat sendiri.');
+        if ($role === 'user' && (int) $wo['requested_by'] !== $userId) {
+            return redirect()->to('/admin/work-orders')->with('error', 'Anda hanya dapat mengedit Work Order yang Anda buat sendiri.');
         }
 
         if (! $this->validate($this->updateRules())) {

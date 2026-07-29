@@ -479,6 +479,7 @@ class WorkOrderModel
         if (!empty($filters['priority']))    { $builder->where('wo.priority', $filters['priority']); }
         if (!empty($filters['type']))        { $builder->where('wo.type', $filters['type']); }
         if (!empty($filters['assigned_to'])) { $builder->where('wo.assigned_to', $filters['assigned_to']); }
+        if (!empty($filters['requested_by'])){ $builder->where('wo.requested_by', $filters['requested_by']); }
         if (session()->get('role') === 'technician') {
             $techId = (int) session()->get('user_id');
             $deptId = session()->get('department_id') ? (int) session()->get('department_id') : 0;

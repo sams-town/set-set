@@ -28,7 +28,37 @@ class DashboardController extends BaseController
     {
         $role = session()->get('role');
         if ($role === 'user') {
-            return redirect()->to('/admin/inventory');
+            // Dashboard sederhana untuk user
+            $userId    = (int) session()->get('user_id');
+            $deptScope = session()->get('department_id') ?: null;
+            $db = \Config\Database::connect();
+
+            // WO yang user buat
+            $myWoTotal  = (int) $db->table('work_orders')->where('requested_by', $userId)->countAllResults();
+            $myWoOpen   = (int) $db->table('work_orders')->where('requested_by', $userId)->where('status', 'open')->countAllResults();
+            $myWoDone   = (int) $db->table('work_orders')->where('requested_by', $userId)->where('status', 'done')->countAllResults();
+
+            // WO terbaru milik user
+            $myWoRecent = $db->table('work_orders wo')
+                ->select('wo.id, wo.wo_code, wo.status, wo.priority, wo.problem_desc, wo.created_at, a.name AS asset_name')
+                ->join('assets a', 'a.id = wo.asset_id', 'left')
+                ->where('wo.requested_by', $userId)
+                ->orderBy('wo.created_at', 'DESC')
+                ->limit(5)->get()->getResultArray();
+
+            // Aset di dept user
+            $myAssets = $deptScope
+                ? (int) $db->table('assets')->where('department_id', $deptScope)->where('deleted_at', null)->countAllResults()
+                : 0;
+
+            return view('dashboard/user', [
+                'title'       => 'Dashboard',
+                'myWoTotal'   => $myWoTotal,
+                'myWoOpen'    => $myWoOpen,
+                'myWoDone'    => $myWoDone,
+                'myWoRecent'  => $myWoRecent,
+                'myAssets'    => $myAssets,
+            ]);
         }
         if ($role === 'pembelian') {
             return redirect()->to('/admin/procurement');
