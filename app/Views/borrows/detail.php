@@ -34,6 +34,11 @@ $isLate = ($borrow['status'] === 'dipinjam')
             <?php endif; ?>
         </div>
     </div>
+    <!-- Tombol Cetak Tanda Terima -->
+    <a href="<?= base_url('admin/borrows/' . $borrow['id'] . '/receipt') ?>" target="_blank"
+       class="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
+        🖨️ Cetak Tanda Terima
+    </a>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">

@@ -20,7 +20,11 @@ class BorrowModel extends Model
         'return_date_plan',
         'return_date_actual',
         'status',
+        'previous_asset_status',
         'purpose',
+        'borrower_name',
+        'borrower_dept',
+        'borrower_phone',
         'notes',
         'approved_by',
     ];

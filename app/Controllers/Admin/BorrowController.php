@@ -83,28 +83,55 @@ class BorrowController extends BaseController
         $assetId = (int) $this->request->getPost('asset_id');
         $asset   = $this->assetModel->getById($assetId);
 
-        if (! $asset || ! in_array($asset['status'], ['Standby', 'Siap Operasi'])) {
+        if (! $asset || ! in_array($asset['status'], ['Standby', 'Siap Operasi', 'tersedia'])) {
             return redirect()->back()->withInput()->with('error', 'Aset tidak tersedia untuk dipinjam.');
         }
 
         $borrowCode = $this->borrowModel->generateCode();
 
-        $this->borrowModel->insert([
-            'borrow_code'      => $borrowCode,
-            'asset_id'         => $assetId,
-            'user_id'          => $this->request->getPost('user_id'),
-            'borrow_date'      => $this->request->getPost('borrow_date'),
-            'return_date_plan' => $this->request->getPost('return_date_plan') ?: null,
-            'status'           => 'dipinjam',
-            'purpose'          => $this->request->getPost('purpose'),
-            'approved_by'      => session()->get('user_id'),
+        $borrowId = $this->borrowModel->insert([
+            'borrow_code'           => $borrowCode,
+            'asset_id'              => $assetId,
+            'user_id'               => $this->request->getPost('user_id'),
+            'borrow_date'           => $this->request->getPost('borrow_date'),
+            'return_date_plan'      => $this->request->getPost('return_date_plan') ?: null,
+            'status'                => 'dipinjam',
+            'previous_asset_status' => $asset['status'], // simpan status lama
+            'purpose'               => $this->request->getPost('purpose'),
+            'borrower_name'         => $this->request->getPost('borrower_name') ?: null,
+            'borrower_dept'         => $this->request->getPost('borrower_dept') ?: null,
+            'borrower_phone'        => $this->request->getPost('borrower_phone') ?: null,
+            'approved_by'           => session()->get('user_id'),
         ]);
 
-        // Update status aset ke Aktif
-        $this->assetModel->update($assetId, ['status' => 'Aktif']);
-        $this->logModel->record($assetId, 'dipinjam', 'Dipinjam dengan kode: ' . $borrowCode);
+        // Sync: update status aset ke 'dipinjam'
+        $this->assetModel->update($assetId, ['status' => 'dipinjam']);
+        $this->logModel->record($assetId, 'dipinjam', 'Dipinjam oleh ' . ($this->request->getPost('borrower_name') ?: 'user') . ' — kode: ' . $borrowCode);
 
-        return redirect()->to('/admin/borrows')->with('success', 'Peminjaman berhasil dicatat.');
+        return redirect()->to('/admin/borrows/' . $borrowId)
+            ->with('success', 'Peminjaman <strong>' . $borrowCode . '</strong> berhasil dicatat.');
+    }
+
+    // GET /admin/borrows/{id}/receipt
+    public function receipt(int $id)
+    {
+        $borrow = $this->borrowModel->getDetailById($id);
+        if (! $borrow) {
+            return redirect()->to('/admin/borrows')->with('error', 'Data peminjaman tidak ditemukan.');
+        }
+
+        // Ambil info lebih lengkap untuk tanda terima
+        $asset = $this->assetModel->getById((int) $borrow['asset_id']);
+
+        // Info organisasi dari settings atau config
+        $orgName = 'RS. Taman Harapan Baru';
+
+        return view('borrows/receipt', [
+            'title'   => 'Tanda Terima Peminjaman — ' . $borrow['borrow_code'],
+            'borrow'  => $borrow,
+            'asset'   => $asset,
+            'orgName' => $orgName,
+        ]);
     }
 
     // GET /admin/borrows/{id}
@@ -148,9 +175,11 @@ class BorrowController extends BaseController
             'notes'              => $this->request->getPost('notes'),
         ]);
 
-        // Update status aset kembali ke Standby
-        $this->assetModel->update((int) $borrow['asset_id'], ['status' => 'Standby']);
-        $this->logModel->record((int) $borrow['asset_id'], 'dikembalikan', 'Dikembalikan pada ' . $returnDate);
+        // Restore status aset ke status sebelum dipinjam (atau Standby jika tidak ada)
+        $restoreStatus = $borrow['previous_asset_status'] ?: 'Standby';
+        $this->assetModel->update((int) $borrow['asset_id'], ['status' => $restoreStatus]);
+        $this->logModel->record((int) $borrow['asset_id'], 'dikembalikan',
+            'Dikembalikan pada ' . $returnDate . '. Status dipulihkan ke: ' . $restoreStatus);
 
         return redirect()->to('/admin/borrows/' . $id)->with('success', 'Aset berhasil dikembalikan.');
     }

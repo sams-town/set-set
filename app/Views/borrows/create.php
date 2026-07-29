@@ -40,20 +40,48 @@
         <p class="text-xs text-gray-400 mt-1">Hanya aset berstatus <strong>Tersedia</strong> yang ditampilkan.</p>
     </div>
 
-    <!-- Peminjam -->
+    <!-- Peminjam (akun sistem) -->
     <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">
-            Peminjam <span class="text-red-500">*</span>
+            Akun Peminjam <span class="text-red-500">*</span>
         </label>
         <select name="user_id" required
                 class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
-            <option value="">-- Pilih Peminjam --</option>
+            <option value="">-- Pilih Akun --</option>
             <?php foreach ($users as $u): ?>
             <option value="<?= $u['id'] ?>" <?= old('user_id') == $u['id'] ? 'selected' : '' ?>>
                 <?= esc($u['name']) ?> (<?= esc($u['email']) ?>)
             </option>
             <?php endforeach; ?>
         </select>
+    </div>
+
+    <!-- Info Peminjam (untuk tanda terima) -->
+    <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 space-y-3">
+        <p class="text-xs font-semibold text-blue-700">📋 Data Peminjam (untuk Tanda Terima)</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+                <label class="block text-xs font-medium text-gray-600 mb-1">Nama Lengkap Peminjam</label>
+                <input type="text" name="borrower_name"
+                       value="<?= old('borrower_name') ?>"
+                       placeholder="Nama lengkap..."
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-600 mb-1">Departemen / Unit</label>
+                <input type="text" name="borrower_dept"
+                       value="<?= old('borrower_dept') ?>"
+                       placeholder="Departemen..."
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-600 mb-1">No. HP</label>
+                <input type="text" name="borrower_phone"
+                       value="<?= old('borrower_phone') ?>"
+                       placeholder="08xx..."
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
+            </div>
+        </div>
     </div>
 
     <!-- Tanggal -->

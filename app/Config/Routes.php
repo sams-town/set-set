@@ -92,6 +92,7 @@ $routes->group('admin', ['filter' => 'auth'], function ($routes) {
         $routes->get('new',                 'Admin\BorrowController::create');
         $routes->post('/',                  'Admin\BorrowController::store');
         $routes->get('(:num)',              'Admin\BorrowController::show/$1');
+        $routes->get('(:num)/receipt',      'Admin\BorrowController::receipt/$1');
         $routes->post('(:num)/return',      'Admin\BorrowController::returnAsset/$1');
     });
 
