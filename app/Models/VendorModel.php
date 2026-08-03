@@ -9,9 +9,33 @@ class VendorModel
     protected BaseConnection $db;
 
     public const CATEGORIES = [
-        'supplier' => 'Supplier / Penyedia Barang',
-        'service'  => 'Service / Jasa Perbaikan',
-        'both'     => 'Supplier & Service',
+        // Umum
+        'supplier'                  => 'Supplier / Penyedia Barang',
+        'service'                   => 'Service / Jasa Perbaikan',
+        'both'                      => 'Supplier & Service',
+        // Operasional RS
+        'engineering_maintenance'   => 'Engineering & Maintenance',
+        'cleaning_service'          => 'Cleaning Service',
+        'security'                  => 'Security',
+        'parking_management'        => 'Parking Management',
+        'linen_laundry'             => 'Linen & Laundry',
+        'waste_management'          => 'Waste Management (Limbah B3 & Domestik)',
+        'pest_control'              => 'Pest Control',
+        'landscaping'               => 'Landscaping / Taman',
+        // Teknik & Infrastruktur
+        'lift_eskalator'            => 'Lift & Eskalator',
+        'hvac'                      => 'HVAC (AC, Chiller, AHU)',
+        'genset_panel'              => 'Genset & Panel Listrik',
+        'plumbing_sanitasi'         => 'Plumbing & Sanitasi',
+        'fire_protection'           => 'Fire Protection (Hydrant, APAR, Fire Alarm)',
+        'cctv_access_control'       => 'CCTV & Access Control',
+        // Lainnya
+        'furniture'                 => 'Furniture',
+        'konstruksi_renovasi'       => 'Konstruksi & Renovasi',
+        'pengadaan_umum'            => 'Pengadaan Barang Umum',
+        'vendor_kalibrasi'          => 'Vendor Kalibrasi',
+        'vendor_kendaraan'          => 'Vendor Kendaraan Operasional',
+        'vendor_konsultan'          => 'Vendor Konsultan',
     ];
 
     public function __construct()

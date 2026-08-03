@@ -55,7 +55,7 @@ class VendorController extends BaseController
     {
         $rules = [
             'name'     => 'required|min_length[2]|max_length[150]',
-            'category' => 'required|in_list[supplier,service,both]',
+            'category' => 'required|max_length[100]',
         ];
 
         if (! $this->validate($rules)) {
@@ -110,7 +110,7 @@ class VendorController extends BaseController
 
         $rules = [
             'name'     => 'required|min_length[2]|max_length[150]',
-            'category' => 'required|in_list[supplier,service,both]',
+            'category' => 'required|max_length[100]',
         ];
 
         if (! $this->validate($rules)) {
