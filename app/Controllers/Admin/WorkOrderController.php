@@ -314,8 +314,6 @@ class WorkOrderController extends BaseController
         }
         if ($role === 'user' && (int) $wo['requested_by'] !== $userId) {
             return redirect()->to('/admin/work-orders')->with('error', 'Anda hanya dapat mengedit Work Order yang Anda buat sendiri.');
-        if ($role === 'user' && (int) $wo['requested_by'] !== $userId) {
-            return redirect()->to('/admin/work-orders')->with('error', 'Anda hanya dapat mengedit Work Order yang Anda buat sendiri.');
         }
 
         if (! $this->validate($this->updateRules())) {
