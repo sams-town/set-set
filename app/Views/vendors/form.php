@@ -62,37 +62,11 @@ $v = fn($key, $default = '') => old($key, $vendor[$key] ?? $default);
                     </label>
                     <select name="category" required
                             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
-                        <optgroup label="── Umum ──">
-                            <option value="supplier"    <?= $v('category', 'supplier') === 'supplier'    ? 'selected' : '' ?>>Supplier / Penyedia Barang</option>
-                            <option value="service"     <?= $v('category', 'supplier') === 'service'     ? 'selected' : '' ?>>Service / Jasa Perbaikan</option>
-                            <option value="both"        <?= $v('category', 'supplier') === 'both'        ? 'selected' : '' ?>>Supplier & Service</option>
-                        </optgroup>
-                        <optgroup label="── Operasional RS ──">
-                            <option value="engineering_maintenance" <?= $v('category') === 'engineering_maintenance' ? 'selected' : '' ?>>Engineering & Maintenance</option>
-                            <option value="cleaning_service"        <?= $v('category') === 'cleaning_service'        ? 'selected' : '' ?>>Cleaning Service</option>
-                            <option value="security"                <?= $v('category') === 'security'                ? 'selected' : '' ?>>Security</option>
-                            <option value="parking_management"      <?= $v('category') === 'parking_management'      ? 'selected' : '' ?>>Parking Management</option>
-                            <option value="linen_laundry"           <?= $v('category') === 'linen_laundry'           ? 'selected' : '' ?>>Linen & Laundry</option>
-                            <option value="waste_management"        <?= $v('category') === 'waste_management'        ? 'selected' : '' ?>>Waste Management (Limbah B3 & Domestik)</option>
-                            <option value="pest_control"            <?= $v('category') === 'pest_control'            ? 'selected' : '' ?>>Pest Control</option>
-                            <option value="landscaping"             <?= $v('category') === 'landscaping'             ? 'selected' : '' ?>>Landscaping / Taman</option>
-                        </optgroup>
-                        <optgroup label="── Teknik & Infrastruktur ──">
-                            <option value="lift_eskalator"          <?= $v('category') === 'lift_eskalator'          ? 'selected' : '' ?>>Lift & Eskalator</option>
-                            <option value="hvac"                    <?= $v('category') === 'hvac'                    ? 'selected' : '' ?>>HVAC (AC, Chiller, AHU)</option>
-                            <option value="genset_panel"            <?= $v('category') === 'genset_panel'            ? 'selected' : '' ?>>Genset & Panel Listrik</option>
-                            <option value="plumbing_sanitasi"       <?= $v('category') === 'plumbing_sanitasi'       ? 'selected' : '' ?>>Plumbing & Sanitasi</option>
-                            <option value="fire_protection"         <?= $v('category') === 'fire_protection'         ? 'selected' : '' ?>>Fire Protection (Hydrant, APAR, Fire Alarm)</option>
-                            <option value="cctv_access_control"     <?= $v('category') === 'cctv_access_control'     ? 'selected' : '' ?>>CCTV & Access Control</option>
-                        </optgroup>
-                        <optgroup label="── Lainnya ──">
-                            <option value="furniture"               <?= $v('category') === 'furniture'               ? 'selected' : '' ?>>Furniture</option>
-                            <option value="konstruksi_renovasi"     <?= $v('category') === 'konstruksi_renovasi'     ? 'selected' : '' ?>>Konstruksi & Renovasi</option>
-                            <option value="pengadaan_umum"          <?= $v('category') === 'pengadaan_umum'          ? 'selected' : '' ?>>Pengadaan Barang Umum</option>
-                            <option value="vendor_kalibrasi"        <?= $v('category') === 'vendor_kalibrasi'        ? 'selected' : '' ?>>Vendor Kalibrasi</option>
-                            <option value="vendor_kendaraan"        <?= $v('category') === 'vendor_kendaraan'        ? 'selected' : '' ?>>Vendor Kendaraan Operasional</option>
-                            <option value="vendor_konsultan"        <?= $v('category') === 'vendor_konsultan'        ? 'selected' : '' ?>>Vendor Konsultan</option>
-                        </optgroup>
+                        <?php foreach ($categories as $key => $label): ?>
+                        <option value="<?= $key ?>" <?= $v('category', 'umum') === $key ? 'selected' : '' ?>>
+                            <?= $label ?>
+                        </option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
 
