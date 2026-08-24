@@ -95,7 +95,7 @@ $routes->group('admin', ['filter' => 'auth'], function ($routes) {
     });
 
     // ── Borrows (Admin & User Only) ─────────────────────────────
-    $routes->group('borrows', ['filter' => 'role:admin,user'], function ($routes) {
+    $routes->group('borrows', ['filter' => 'role:admin,user,technician,it,atem'], function ($routes) {
         $routes->get('/',                   'Admin\BorrowController::index');
         $routes->get('new',                 'Admin\BorrowController::create');
         $routes->post('/',                  'Admin\BorrowController::store');
@@ -105,7 +105,7 @@ $routes->group('admin', ['filter' => 'auth'], function ($routes) {
     });
 
     // ── Procurement ─────────────────────────────────────────────
-    $routes->group('procurement', ['filter' => 'role:admin,user,pembelian'], function ($routes) {
+    $routes->group('procurement', ['filter' => 'role:admin,user,pembelian,technician,it,atem'], function ($routes) {
         $routes->get('/',                          'Admin\ProcurementController::index');
         $routes->get('new',                        'Admin\ProcurementController::create');
         $routes->post('/',                         'Admin\ProcurementController::store');
@@ -128,7 +128,7 @@ $routes->group('admin', ['filter' => 'auth'], function ($routes) {
     });
 
     // ── Inventory Asset (Admin & User Only, Delete: Admin Only) ─
-    $routes->group('inventory', ['filter' => 'role:admin,user'], function ($routes) {
+    $routes->group('inventory', ['filter' => 'role:admin,user,technician,it,atem'], function ($routes) {
         $routes->get('/',                    'Admin\InventoryAssetController::index');
         $routes->get('new',                  'Admin\InventoryAssetController::create');
         $routes->post('/',                   'Admin\InventoryAssetController::store');
