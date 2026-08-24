@@ -87,6 +87,13 @@ class DashboardController extends BaseController
             ]);
         }
 
+        // Hanya admin yang boleh lihat KPI dashboard
+        // Semua role lain sudah di-handle di atas, jika lolos sampai sini redirect
+        if ($role !== 'admin') {
+            // Fallback safety — redirect ke WO untuk role yang tidak dikenal
+            return redirect()->to('/admin/work-orders');
+        }
+
         // ── A. Aset ────────────────────────────────────────────────
         $assetSummary     = $this->kpi->assetSummary();
         $totalValue       = $this->kpi->totalAssetValue();
