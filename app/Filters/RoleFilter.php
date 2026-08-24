@@ -24,7 +24,18 @@ class RoleFilter implements FilterInterface
                     ->setJSON(['message' => 'Akses ditolak.']);
             }
 
-            return redirect()->to('/admin/dashboard')->with('error', 'Anda tidak memiliki akses ke halaman tersebut.');
+            // Redirect ke halaman yang sesuai role agar tidak loop
+            $fallback = match($userRole) {
+                'admin'      => '/admin/dashboard',
+                'user'       => '/admin/work-orders',
+                'technician' => '/admin/work-orders',
+                'it'         => '/admin/work-orders',
+                'atem'       => '/admin/work-orders',
+                'pembelian'  => '/admin/procurement',
+                default      => '/login',
+            };
+
+            return redirect()->to($fallback)->with('error', 'Anda tidak memiliki akses ke halaman tersebut.');
         }
 
         // Jika tidak ada argumen, pastikan minimal sudah login dan punya role
