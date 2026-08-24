@@ -63,8 +63,28 @@ class DashboardController extends BaseController
         if ($role === 'pembelian') {
             return redirect()->to('/admin/procurement');
         }
-        if ($role === 'technician') {
-            return redirect()->to('/admin/work-orders');
+        if (in_array($role, ['technician', 'it', 'atem'])) {
+            // Dashboard sederhana untuk technician/IT/ATEM
+            $userId = (int) session()->get('user_id');
+            $db = \Config\Database::connect();
+
+            $myWoTotal    = (int) $db->table('work_orders')->where('assigned_to', $userId)->countAllResults();
+            $myWoOpen     = (int) $db->table('work_orders')->where('assigned_to', $userId)->whereIn('status', ['open','in_progress','waiting_part'])->countAllResults();
+            $myWoDone     = (int) $db->table('work_orders')->where('assigned_to', $userId)->where('status', 'done')->countAllResults();
+            $myWoRecent   = $db->table('work_orders wo')
+                ->select('wo.id, wo.wo_code, wo.status, wo.priority, wo.problem_desc, wo.created_at, a.name AS asset_name')
+                ->join('assets a', 'a.id = wo.asset_id', 'left')
+                ->where('wo.assigned_to', $userId)
+                ->orderBy('wo.created_at', 'DESC')
+                ->limit(5)->get()->getResultArray();
+
+            return view('dashboard/technician', [
+                'title'      => 'Dashboard',
+                'myWoTotal'  => $myWoTotal,
+                'myWoOpen'   => $myWoOpen,
+                'myWoDone'   => $myWoDone,
+                'myWoRecent' => $myWoRecent,
+            ]);
         }
 
         // ── A. Aset ────────────────────────────────────────────────

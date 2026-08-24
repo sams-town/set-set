@@ -458,5 +458,9 @@ class InventoryAssetModel
             $builder->where('a.warranty_expiry >=', date('Y-m-d'))
                     ->where('a.warranty_expiry <=', date('Y-m-d', strtotime('+30 days')));
         }
+
+        if (! empty($filters['created_by'])) {
+            $builder->where('a.created_by', $filters['created_by']);
+        }
     }
 }

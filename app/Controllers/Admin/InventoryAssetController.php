@@ -84,6 +84,8 @@ class InventoryAssetController extends BaseController
             'location_id'      => $this->request->getGet('location_id'),
             'status_condition' => $this->request->getGet('status_condition'),
             'warranty_expiring'=> $this->request->getGet('warranty_expiring'),
+            // User hanya lihat aset yang dia input sendiri
+            'created_by'       => (session()->get('role') === 'user') ? session()->get('user_id') : null,
         ];
 
         $page       = max(1, (int) $this->request->getGet('page'));

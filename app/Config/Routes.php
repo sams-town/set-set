@@ -196,5 +196,9 @@ $routes->group('admin', ['filter' => 'auth'], function ($routes) {
         $routes->post('(:num)/update',   'Admin\UserController::update/$1');
         $routes->post('(:num)/delete',   'Admin\UserController::delete/$1');
     });
+
+    // ── Ganti Password (semua role yang sudah login) ─────────────
+    $routes->get('profile/password',  'Admin\UserController::changePassword', ['filter' => 'auth']);
+    $routes->post('profile/password', 'Admin\UserController::updatePassword', ['filter' => 'auth']);
 });
 

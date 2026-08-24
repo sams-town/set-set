@@ -186,6 +186,50 @@ class UserController extends BaseController
     }
 
     // ================================================================
+    // GET /admin/profile/password — Ganti password sendiri
+    // ================================================================
+    public function changePassword()
+    {
+        return view('users/change_password', [
+            'title' => 'Ganti Password',
+        ]);
+    }
+
+    // ================================================================
+    // POST /admin/profile/password
+    // ================================================================
+    public function updatePassword()
+    {
+        $userId = (int) session()->get('user_id');
+        $user   = $this->model->getById($userId);
+
+        if (! $user) {
+            return redirect()->to('/admin/dashboard')->with('error', 'Akun tidak ditemukan.');
+        }
+
+        $current  = $this->request->getPost('current_password');
+        $new      = $this->request->getPost('new_password');
+        $confirm  = $this->request->getPost('confirm_password');
+
+        if (! password_verify($current, $user['password'])) {
+            return redirect()->back()->with('error', 'Password saat ini tidak sesuai.');
+        }
+
+        if (strlen($new) < 6) {
+            return redirect()->back()->with('error', 'Password baru minimal 6 karakter.');
+        }
+
+        if ($new !== $confirm) {
+            return redirect()->back()->with('error', 'Konfirmasi password tidak cocok.');
+        }
+
+        $this->model->update($userId, ['password' => $new]);
+
+        return redirect()->to('/admin/profile/password')
+            ->with('success', 'Password berhasil diubah.');
+    }
+
+    // ================================================================
     // POST /admin/users/{id}/delete
     // ================================================================
     public function delete(int $id)

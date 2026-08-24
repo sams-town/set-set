@@ -66,17 +66,14 @@
 
             // Menu utama dengan filter peran/role
             $allNav = [
-                ['url' => 'admin/dashboard',   'label' => 'Dashboard',         'icon' => '📊', 'roles' => ['admin', 'user']],
-                ['url' => 'admin/procurement', 'label' => 'Procurement',       'icon' => '🛒', 'roles' => ['admin', 'user', 'pembelian']],
-                ['url' => 'admin/inventory',   'label' => 'Inventory Aset',    'icon' => '🗃️', 'roles' => ['admin', 'user']],
-                ['url' => 'admin/vendors',     'label' => 'Vendor',            'icon' => '🏭', 'roles' => ['admin']],
-                ['url' => 'admin/categories',  'label' => 'Kategori',          'icon' => '🏷️', 'roles' => ['admin']],
-                ['url' => 'admin/work-orders', 'label' => 'Work Order',        'icon' => '📋', 'roles' => ['admin', 'user']],
+                ['url' => 'admin/dashboard',   'label' => 'Dashboard',         'icon' => '📊', 'roles' => ['admin', 'user', 'technician', 'it', 'atem']],
+                ['url' => 'admin/procurement', 'label' => 'Procurement',       'icon' => '🛒', 'roles' => ['admin', 'user', 'pembelian', 'atem', 'it', 'technician']],
+                ['url' => 'admin/inventory',   'label' => 'Inventory Aset',    'icon' => '🗃️', 'roles' => ['admin', 'user', 'atem', 'it', 'technician']],
+                ['url' => 'admin/work-orders', 'label' => 'Work Order',        'icon' => '📋', 'roles' => ['admin', 'user', 'technician', 'it', 'atem']],
                 ['url' => 'admin/pm',          'label' => 'Preventive PM',     'icon' => '🛡️', 'roles' => ['admin', 'technician', 'it', 'atem']],
-                ['url' => 'admin/checklist',   'label' => 'Checklist',         'icon' => '📋', 'roles' => ['admin', 'technician', 'it', 'atem']],
-                ['url' => 'admin/cm',          'label' => 'Corrective Maint.', 'icon' => '🔧', 'roles' => ['admin']],
-                ['url' => 'admin/work-orders', 'label' => 'Work Order',        'icon' => '📋', 'roles' => ['technician', 'it', 'atem']],
-                ['url' => 'admin/borrows',     'label' => 'Peminjaman',        'icon' => '🔄', 'roles' => ['admin', 'user']],
+                ['url' => 'admin/cm',          'label' => 'Corrective Maint.', 'icon' => '🔧', 'roles' => ['admin', 'technician', 'it', 'atem']],
+                ['url' => 'admin/checklist',   'label' => 'Checklist',         'icon' => '☑️',  'roles' => ['admin', 'technician', 'it', 'atem']],
+                ['url' => 'admin/borrows',     'label' => 'Peminjaman',        'icon' => '🔄', 'roles' => ['admin', 'user', 'atem', 'it', 'technician']],
                 ['url' => 'admin/reports',     'label' => 'Laporan',           'icon' => '📑', 'roles' => ['admin']],
             ];
 
@@ -91,6 +88,7 @@
                 ['url' => 'admin/room-types',       'label' => 'Tipe Ruangan',  'icon' => '🚪'],
                 ['url' => 'admin/locations',        'label' => 'Lokasi',        'icon' => '📍'],
                 ['url' => 'admin/categories',       'label' => 'Kategori Aset', 'icon' => '🏷️'],
+                ['url' => 'admin/vendors',          'label' => 'Vendor',        'icon' => '🏭'],
                 ['url' => 'admin/asset-templates',  'label' => 'Template Aset', 'icon' => '📋'],
             ];
 
@@ -177,6 +175,10 @@
             <a href="<?= base_url('logout') ?>"
                class="mt-2 flex items-center gap-2 text-red-400 hover:text-red-300 text-xs">
                 ⎋ Logout
+            </a>
+            <a href="<?= base_url('admin/profile/password') ?>"
+               class="mt-1 flex items-center gap-2 text-gray-400 hover:text-gray-200 text-xs">
+                🔑 Ganti Password
             </a>
         </div>
     </aside>
