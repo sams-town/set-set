@@ -85,19 +85,24 @@ class UserController extends BaseController
 
         $avatar = $this->handleAvatarUpload();
 
-        $this->model->insert([
-            'name'          => $this->request->getPost('name'),
-            'email'         => $email,
-            'password'      => $this->request->getPost('password'),
-            'role'          => $this->request->getPost('role'),
-            'phone'         => $this->request->getPost('phone'),
-            'department_id' => $this->request->getPost('department_id') ?: null,
-            'employee_id'   => $this->request->getPost('employee_id'),
-            'position'      => $this->request->getPost('position'),
-            'notes'         => $this->request->getPost('notes'),
-            'avatar'        => $avatar,
-            'is_active'     => 1,
-        ]);
+        try {
+            $this->model->insert([
+                'name'          => $this->request->getPost('name'),
+                'email'         => $email,
+                'password'      => $this->request->getPost('password'),
+                'role'          => $this->request->getPost('role'),
+                'phone'         => $this->request->getPost('phone'),
+                'department_id' => $this->request->getPost('department_id') ?: null,
+                'employee_id'   => $this->request->getPost('employee_id'),
+                'position'      => $this->request->getPost('position'),
+                'notes'         => $this->request->getPost('notes'),
+                'avatar'        => $avatar,
+                'is_active'     => 1,
+            ]);
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()
+                ->with('errors', ['email' => 'Email sudah terdaftar atau terjadi kesalahan database.']);
+        }
 
         return redirect()->to('/admin/users')
             ->with('success', 'Staff <strong>' . esc($this->request->getPost('name')) . '</strong> berhasil ditambahkan.');

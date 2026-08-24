@@ -102,6 +102,15 @@
                     'it'         => 'bg-purple-100 text-purple-700',
                     'atem'       => 'bg-teal-100 text-teal-700',
                     'user'       => 'bg-blue-100 text-blue-700',
+                    'pembelian'  => 'bg-yellow-100 text-yellow-700',
+                ];
+                $roleIcons = [
+                    'admin'      => '🛡️',
+                    'technician' => '🔧',
+                    'it'         => '💻',
+                    'atem'       => '🔬',
+                    'user'       => '👤',
+                    'pembelian'  => '🛒',
                 ];
                 foreach ($users as $u):
                     $isSelf = (int)$u['id'] === (int)session()->get('user_id');
@@ -136,7 +145,7 @@
                     <td class="px-3 py-2.5 text-xs text-gray-600"><?= esc($u['department_name'] ?? '—') ?></td>
                     <td class="px-3 py-2.5 text-center">
                         <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-semibold <?= $roleBadge[$u['role']] ?? 'bg-gray-100 text-gray-600' ?>">
-                            <?= $roleIcons[$u['role']] ?? '' ?> <?= $roles[$u['role']] ?? $u['role'] ?>
+                            <?= ($roleIcons[$u['role']] ?? '') ?> <?= $roles[$u['role']] ?? esc($u['role']) ?>
                         </span>
                     </td>
                     <td class="px-3 py-2.5 text-center">

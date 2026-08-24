@@ -33,9 +33,7 @@ class RoleFilter implements FilterInterface
                 'atem'       => '/admin/work-orders',
                 'pembelian'  => '/admin/procurement',
                 default      => '/login',
-            };
-
-            return redirect()->to($fallback)->with('error', 'Anda tidak memiliki akses ke halaman tersebut.');
+            };            return redirect()->to($fallback)->with('error', 'Anda tidak memiliki akses ke halaman tersebut.');
         }
 
         // Jika tidak ada argumen, pastikan minimal sudah login dan punya role
